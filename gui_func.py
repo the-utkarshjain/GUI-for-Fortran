@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import hashlib
-
+import random
 
 class GUIMain(GUIBase):
 
@@ -39,7 +39,9 @@ class GUIMain(GUIBase):
 
     @classmethod
     def _nonblocking_execute_external_code(cls, exe_file_path: str, thread_queue: list):
-        pass
+        t = threading.Thread(target = lambda x: os.system(exe_file_path) , args = (random.randint(1, 10),))
+        thread_queue.append(t)
+        t.start()
 
     @classmethod
     @PlotEncapsulator
