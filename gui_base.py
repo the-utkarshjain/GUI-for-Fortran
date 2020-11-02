@@ -98,8 +98,9 @@ class GUIBase(object):
         3. second_file_path: Path of the second input file
         4. third_file_path: Path of the third input file
         5. memory: A dictionary containing previous md5 fingerprint
-        @returns: True if any updates detected. False othewise.
+        @returns: Bool:True, if any updates detected. Bool:False othewise.
         """
+        raise NotImplementedError("This function needs to be implemented in child class by `Utkarsh Jain`")
 
     @classmethod
     def _nonblocking_execute_external_code(cls, exe_file_path: str, thread_queue: list):
