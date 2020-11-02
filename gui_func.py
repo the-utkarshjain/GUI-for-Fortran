@@ -14,8 +14,8 @@ class GUIMain(GUIBase):
 
     @classmethod
     def _refresh_utility(cls, first_file_path: str, second_file_path: str, third_file_path: str, memory: dict) -> bool:
-
-        bool isupdates = False
+        
+        isupdates = False
         checksum_file_1 = hashlib.md5(open(first_file_path).read()).hexdigest()
         checksum_file_2 = hashlib.md5(open(second_file_path).read()).hexdigest()
         checksum_file_3 = hashlib.md5(open(third_file_path).read()).hexdigest()
@@ -27,11 +27,14 @@ class GUIMain(GUIBase):
         if(memory.get(second_file_path, None) != checksum_file_2):
             memory[second_file_path] = checksum_file_2
             isupdates = True
-
+            
         if(memory.get(third_file_path, None) != checksum_file_3):
             memory[third_file_path] = checksum_file_3
-            isupdates = True
-        
+            isupdates = True  
+
+        if(isupdates == False):
+            print("No updates found in the input file.")
+
         return isupdates
 
     @classmethod
