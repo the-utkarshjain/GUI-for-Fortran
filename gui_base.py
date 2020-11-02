@@ -88,7 +88,18 @@ class GUIBase(object):
 
     @classmethod
     def _refresh_utility(cls, first_file_path: str, second_file_path: str, third_file_path: str, memory: dict) -> bool:
-        raise NotImplementedError("This function needs to be implemented in child class by `Utkarsh Jain`")
+        """
+        name: _refresh_utility
+        definition: gui_func.py
+        description: Checks if any of the input files are changed/updated.
+        @params:
+        1. cls: Class object
+        2. first_file_path: Path of the first input file
+        3. second_file_path: Path of the second input file
+        4. third_file_path: Path of the third input file
+        5. memory: A dictionary containing previous md5 fingerprint
+        @returns: True if any updates detected. False othewise.
+        """
 
     @classmethod
     def _nonblocking_execute_external_code(cls, exe_file_path: str, thread_queue: list):
