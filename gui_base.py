@@ -20,6 +20,10 @@ def PlotEncapsulator(func):
     def encapsulator(*args, **kwargs):
         plt.figure(1)
         fig = plt.gcf()
+        buf = io.BytesIO()
+        pickle.dump(fig, buf)
+        buf.seek(0)
+        fig = pickle.load(buf)
         DPI = fig.get_dpi()
         fig.set_size_inches(407 * 2 / float(DPI), 407 / float(DPI))
         func(*args, **kwargs)
@@ -171,9 +175,9 @@ class GUIBase(object):
 
     def _draw_plots(self):
 
-        fig1 = self._plot_first_2D_data("./.tmp/output.dat", self._second_input_path)
-        fig2 = self._plot_second_2D_data("./.tmp/output.dat", self._second_input_path)
-        fig3 = self._plot_both_2D_data("./.tmp/output.dat", self._second_input_path)
+        fig1 = self._plot_first_2D_data("./output.dat", self._second_input_path)
+        fig2 = self._plot_second_2D_data("./output.dat", self._second_input_path)
+        fig3 = self._plot_both_2D_data("./output.dat", self._second_input_path)
         self._draw_plot_with_toolbar(self.window['fig_plot_1'].TKCanvas, fig1, self.window['controls_plot_1'].TKCanvas)
         self._draw_plot_with_toolbar(self.window['fig_plot_2'].TKCanvas, fig2, self.window['controls_plot_2'].TKCanvas)
         self._draw_plot_with_toolbar(self.window['fig_plot_3'].TKCanvas, fig3, self.window['controls_plot_3'].TKCanvas)
@@ -254,7 +258,7 @@ class GUIBase(object):
     def first_input_path(self, path):
         if path:
             ext = os.path.basename(path)
-            new_path = "./.tmp/{}".format(ext)
+            new_path = "./in_1.dat"
             shutil.copy(path, new_path)
             self._first_input_path = new_path
 
@@ -262,7 +266,7 @@ class GUIBase(object):
     def second_input_path(self, path):
         if path:
             ext = os.path.basename(path)
-            new_path = "./.tmp/{}".format(ext)
+            new_path = "./in_2.dat"
             shutil.copy(path, new_path)
             self._second_input_path = new_path
 
@@ -270,7 +274,7 @@ class GUIBase(object):
     def third_input_path(self, path):
         if path:
             ext = os.path.basename(path)
-            new_path = "./.tmp/{}".format(ext)
+            new_path = "./in_3.dat"
             shutil.copy(path, new_path)
             self._third_input_path = new_path
 
@@ -278,7 +282,7 @@ class GUIBase(object):
     def exe_file_path(self, path):
         if path:
             ext = os.path.basename(path)
-            new_path = "./.tmp/{}".format(ext)
+            new_path = "./test.exe"
             shutil.copy(path, new_path)
             self._exe_file_path = new_path
 

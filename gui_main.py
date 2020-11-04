@@ -32,6 +32,10 @@ if __name__ == "__main__":
             GUI.exe_file_path = values[event]
 
         elif event == "-REFRESH-":
+            GUI.first_input_path = values["-FILE1-"]
+            GUI.second_input_path = values["-FILE2-"]
+            GUI.third_input_path = values["-FILE3-"]
+            GUI.exe_file_path = values["-FILE4-"]
             GUI.refresh()
 
         if GUI.is_processing:
