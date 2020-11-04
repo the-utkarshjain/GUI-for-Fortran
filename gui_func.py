@@ -46,14 +46,71 @@ class GUIMain(GUIBase):
     @classmethod
     @PlotEncapsulator
     def _plot_first_2D_data(cls, output_file_path: str, time_file_path: str):
-        pass
+        time = []
+        conc = []
+        with open(time_file_path,'r') as file:
+            data = file.read().splitlines()
+            for row in range(1,len(data)):
+                if row>int(data[0]):
+                    time.append(float(data[row]))
+
+        with open(output_file_path,'r') as file:
+            data = file.read().splitlines()
+            for line in data:
+                x, y = line.split()
+                conc.append(x)
+
+        plt.plot(time,conc)
+        plt.xlabel('Time')
+        plt.ylabel('Concentration')
+        plt.title('Concentration-Time graph')
 
     @classmethod
     @PlotEncapsulator
     def _plot_second_2D_data(cls, output_file_path: str, time_file_path: str):
-        pass
+        time = []
+        conc = []
+        with open(time_file_path,'r') as file:
+            data = file.read().splitlines()
+            for row in range(1,len(data)):
+                if row>int(data[0]):
+                    time.append(float(data[row]))
+
+        with open(output_file_path,'r') as file:
+            data = file.read().splitlines()
+            for line in data:
+                x, y = line.split()
+                conc.append(y)
+
+        plt.plot(time,conc)
+        plt.xlabel('Time')
+        plt.ylabel('Concentration')
+        plt.title('Concentration-Time graph')
 
     @classmethod
     @PlotEncapsulator
     def _plot_both_2D_data(cls, output_file_path: str, time_file_path: str):
-        pass
+        time = []
+        conc1 = []
+        conc2=[]
+
+        with open(time_file_path,'r') as file:
+            data = file.read().splitlines()
+            for row in range(1,len(data)):
+                if row>int(data[0]):
+                    time.append(float(data[row]))
+
+        with open(output_file_path,'r') as file:
+            data = file.read().splitlines()
+            for line in data:
+                x, y = line.split()
+                conc1.append(x)
+                conc2.append(y)
+
+
+        plt.plot(time,conc1, label='1')
+        plt.plot(time,conc2, label='2')
+        plt.xlabel('Time')
+        plt.ylabel('Concentration')
+        plt.title('Concentration-Time graph')
+        plt.legend()
