@@ -1,3 +1,10 @@
+import sys
+ver_error = "GUI script works for python version >= 3.7" 
+try:
+    assert sys.version_info >= (3, 7) 
+except AssertionError as aE:
+    raise OSError(ver_error)
+
 import PySimpleGUI as sg
 import numpy as np
 import matplotlib.pyplot as plt

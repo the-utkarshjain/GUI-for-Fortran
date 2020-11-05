@@ -13,22 +13,22 @@ if __name__ == "__main__":
             break
         elif event == "-FILE1-":
             values[event] = None if values[event] is "" else values[event]
-            print(f"File 1 path set to {values[event]}")
+            print("File 1 path set to {}".format(values[event]))
             GUI.first_input_path = values[event]
 
         elif event == "-FILE2-":
             values[event] = None if values[event] is "" else values[event]
-            print(f"File 2 path set to {values[event]}")
+            print("File 2 path set to {}".format(values[event]))
             GUI.second_input_path = values[event]
 
         elif event == "-FILE3-":
             values[event] = None if values[event] is "" else values[event]
-            print(f"File 3 path set to {values[event]}")
+            print("File 3 path set to {}".format(values[event]))
             GUI.third_input_path = values[event]
 
         elif event == "-FILE4-":
             values[event] = None if values[event] is "" else values[event]
-            print(f"EXE file path set to {values[event]}")
+            print("EXE file path set to {}".format(values[event]))
             GUI.exe_file_path = values[event]
 
         elif event == "-REFRESH-":
