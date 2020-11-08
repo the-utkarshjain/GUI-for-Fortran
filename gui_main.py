@@ -38,6 +38,16 @@ if __name__ == "__main__":
             GUI.exe_file_path = values["-FILE4-"]
             GUI.refresh()
 
+        if values['-SEARCH-'] != "":
+            GUI.refresh_search_list(values['-SEARCH-'])
+        else:
+            GUI.refresh_search_list(values['-SEARCH-'])
+        
+        if event == '-SEARCH-LIST-':
+            if values[event]:
+                GUI.update_variable(values[event][0])
+
+
         if GUI.is_processing:
             GUI.PopupAnimated(GUI.DEFAULT_BASE64_LOADING_GIF, background_color='green', transparent_color='green')
             GUI.freeze_buttons()

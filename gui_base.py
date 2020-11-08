@@ -60,6 +60,37 @@ class GUIBase(object):
         self.WIN_CLOSED = sg.WIN_CLOSED
         self.PopupAnimated = sg.PopupAnimated
         self.DEFAULT_BASE64_LOADING_GIF = sg.DEFAULT_BASE64_LOADING_GIF
+        self._VariableDict = {
+            "nz": None,
+            "nm": None,
+            "Length": None,
+            "Bulk density of porous media": None,
+            "Run time": None,
+            "Pulse time": None,
+            "delta_t": None,
+            "delta_x": None,
+            "Porosity of the macropore region": None,
+            "Porosity of the mesopore region": None,
+            "Porosity of the micropore region": None,
+            "Instantaneous sorption fraction in macropore region": None,
+            "Instantaneous sorption fraction in mesopore region": None,
+            "Instantaneous sorption fraction in micropore region": None,
+            "Fraction of sorption site available for macropore region": None,
+            "Fraction of sorption site available for mesopore region": None,
+            "Fraction of sorption site available for immobile region": None,
+            "Equilibrium sorption coefficient in macropore region": None,
+            "Equilibrium sorption coefficient in mesopore region": None,
+            "Equilibrium sorption coefficient in micropore region": None,
+            "Rate-limited sorbed coefficient in macropore region": None,
+            "Rate-limited sorbed coefficient in mesopore region": None,
+            "Rate-limited sorbed coefficient in micropore region": None,
+            "Mesopore seepage velocity": None,
+            "Macropore seepage velocity": None,
+            "Solute mass transfer rate b/w meso-micropore": None,
+            "Solute mass transfer rate b/w meso-macropore": None,
+            "Dispersivity": None,
+            "No. of observation time steps": None,
+        }
 
         if not os.path.exists("./.tmp"):
             os.mkdir("./.tmp")
@@ -80,6 +111,30 @@ class GUIBase(object):
             )]
         ]
 
+        return tab_layout
+
+    def _create_search_tab(self):
+        tab_layout = [[
+            sg.Column(
+                layout=[
+                    [sg.Text("Variable Editor")],
+                    [sg.Input(size=(45, 1), enable_events=True, key='-SEARCH-', default_text=" ")],
+                    [sg.Listbox(self._VariableDict.keys(), size=(45, 20), enable_events=True, change_submits=True, key='-SEARCH-LIST-', 
+                                            auto_size_text=True, pad=(5, 20))],
+                    ]
+            ), 
+            sg.VSeperator(),
+            sg.Column(
+                layout=
+                    [
+                        [sg.Text("Variable Values")],
+                        [sg.Table(values=[[x, str(self._VariableDict[x])] for x in self._VariableDict.keys()], headings=["Variable", "Current Value"],
+                        col_widths=90, justification='left', font=("Helvetica 10 bold"),
+                        num_rows=8, key="-VARIABLE-TABLE-", row_height=42, vertical_scroll_only=False, alternating_row_color="black")]
+                ]
+            )
+            ]
+        ]
         return tab_layout
 
     @staticmethod
@@ -152,6 +207,7 @@ class GUIBase(object):
         plot1_layout = self._create_plot_tab("controls_plot_1", "fig_plot_1")
         plot2_layout = self._create_plot_tab("controls_plot_2", "fig_plot_2")
         plot3_layout = self._create_plot_tab("controls_plot_3", "fig_plot_3")
+        plot4_layout = self._create_search_tab()
 
         layout = [
             [sg.Text('Plotter GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
@@ -159,9 +215,10 @@ class GUIBase(object):
             sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse"),
             sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse"),
             sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse"),
-            sg.Button(button_text="Refresh", key="-REFRESH-")],
-            [sg.TabGroup([[sg.Tab('Plot 1', plot1_layout), sg.Tab('Plot 2', plot2_layout),
-                                                         sg.Tab('Plot 3', plot3_layout),]])],
+            sg.Button(button_text="Run / Refresh", key="-REFRESH-")],
+            [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
+                                                         sg.Tab('Dual Plot', plot3_layout),
+                                                         sg.Tab('Edit Variables', plot4_layout)]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
             [sg.Output(size=(114, 5), key="-output-")]
 
@@ -226,6 +283,7 @@ class GUIBase(object):
             return
 
         self._nonblocking_execute_external_code(self._exe_file_path, self._thread_queue)
+        self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
 
     @property
     def is_processing(self):
@@ -292,6 +350,34 @@ class GUIBase(object):
             new_path = "./test.exe"
             shutil.copy(path, new_path)
             self._exe_file_path = new_path
+
+    def refresh_search_list(self, params):
+        if params != "":
+            new_values = [x for x in self._VariableDict.keys() if params.lower().replace(" ", "") in x.lower().replace(" ", "")]
+            self.window['-SEARCH-LIST-'].update(values=new_values)
+        else:
+            self.window['-SEARCH-LIST-'].update(values=self._VariableDict.keys())
+
+    def update_variable(self, variable_name):
+        temp = sg.popup_get_text("Enter value for {}".format(variable_name), default_text=str(self._VariableDict[variable_name] \
+                                                                if variable_name in self._VariableDict \
+                                                                and self._VariableDict[variable_name] is not None else ""))
+        if temp:
+            self._VariableDict[variable_name] = temp
+            self.window["-VARIABLE-TABLE-"].update(values=[[x, str(self._VariableDict[x])] for x in self._VariableDict.keys()])
+            self._write_updated_values(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
+
+    @classmethod
+    def _inplace_update_variable_dictionary(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
+
+        raise NotImplementedError("This function needs to be implemented in child class")
+
+    @classmethod
+    def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
+
+        raise NotImplementedError("This function needs to be implemented in child class")
+        
+
 
     
 

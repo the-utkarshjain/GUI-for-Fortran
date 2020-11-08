@@ -121,3 +121,12 @@ class GUIMain(GUIBase):
         plt.ylabel('Concentration')
         plt.title('Concentration-Time graph')
         plt.legend()
+
+    
+    @classmethod
+    def _inplace_update_variable_dictionary(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
+        pass
+
+    @classmethod
+    def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
+        pass
