@@ -181,24 +181,24 @@ class GUIMain(GUIBase):
         try:
             file3 = open(third_file_path, "w")
             lines = ["nz", "nm"]
-            for line in lines:
+            for line in lines[:-1]:
                 file3.write(variable_dictionary(line)+str(" "))
-            file3.write("\n")
+            file3.write(variable_dictionary(lines[-1])+str("\n"))
             lines = ["Length", "Bulk density of porous media", "Run time", "Pulse time", "delta_t", "delta_x"]
             for line in lines:
                 file3.write(variable_dictionary(line)+str(" "))
-            file3.write("\n")
+            file3.write(variable_dictionary(lines[-1])+str("\n"))
             lines = ["Porosity of the macropore region", "Porosity of the mesopore region", "Porosity of the micropore region"]
             for line in lines:
                 file3.write(variable_dictionary(line)+str(" "))
-            file3.write("\n")
+            file3.write(variable_dictionary(lines[-1])+str("\n"))
             lines = ["Instantaneous sorption fraction in macropore region", "Instantaneous sorption fraction in mesopore region", "Instantaneous sorption fraction in micropore region", "Fraction of sorption site available for macropore region", "Fraction of sorption site available for mesopore region", "Fraction of sorption site available for immobile region"]
             for line in lines:
                 file3.write(variable_dictionary(line)+str(" "))
-            file3.write("\n")
+            file3.write(variable_dictionary(lines[-1])+str("\n"))
             lines = ["Equilibrium sorption coefficient in macropore region", "Equilibrium sorption coefficient in mesopore region", "Equilibrium sorption coefficient in micropore region", "Rate-limited sorbed coefficient in macropore region", "Rate-limited sorbed coefficient in mesopore region", "Rate-limited sorbed coefficient in micropore region"]
             for line in lines:
                 file3.write(variable_dictionary(line)+str(" "))
-            file3.write("\n")
+            file3.write(variable_dictionary(lines[-1])+str("\n"))
         finally:
             file3.close()
