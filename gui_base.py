@@ -118,8 +118,8 @@ class GUIBase(object):
             sg.Column(
                 layout=[
                     [sg.Text("Variable Editor")],
-                    [sg.Input(size=(45, 1), enable_events=True, key='-SEARCH-', default_text=" ")],
-                    [sg.Listbox(self._VariableDict.keys(), size=(45, 20), enable_events=True, change_submits=True, key='-SEARCH-LIST-', 
+                    [sg.Input(size=(45, 1), enable_events=True, key='-SEARCH-', default_text="")],
+                    [sg.Listbox(list(self._VariableDict.keys()), size=(45, 20), enable_events=True, key='-SEARCH-LIST-', 
                                             auto_size_text=True, pad=(5, 20))],
                     ]
             ), 
@@ -356,7 +356,7 @@ class GUIBase(object):
             new_values = [x for x in self._VariableDict.keys() if params.lower().replace(" ", "") in x.lower().replace(" ", "")]
             self.window['-SEARCH-LIST-'].update(values=new_values)
         else:
-            self.window['-SEARCH-LIST-'].update(values=self._VariableDict.keys())
+            self.window['-SEARCH-LIST-'].update(values=list(self._VariableDict.keys()))
 
     def update_variable(self, variable_name):
         temp = sg.popup_get_text("Enter value for {}".format(variable_name), default_text=str(self._VariableDict[variable_name] \

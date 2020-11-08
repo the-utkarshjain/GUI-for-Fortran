@@ -38,9 +38,7 @@ if __name__ == "__main__":
             GUI.exe_file_path = values["-FILE4-"]
             GUI.refresh()
 
-        if values['-SEARCH-'] != "":
-            GUI.refresh_search_list(values['-SEARCH-'])
-        else:
+        if event == "-SEARCH-":
             GUI.refresh_search_list(values['-SEARCH-'])
         
         if event == '-SEARCH-LIST-':
