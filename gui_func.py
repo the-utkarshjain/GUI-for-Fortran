@@ -227,8 +227,6 @@ class GUIMain(GUIBase):
         time_series = [float(i) for i in timestamps_data]
         return time_series
 
-print(time_series)
-
     @GUI_exception
     def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
         pass

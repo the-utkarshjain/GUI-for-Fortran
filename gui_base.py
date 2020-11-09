@@ -221,23 +221,64 @@ class GUIBase(object):
 
     @classmethod
     def _nonblocking_execute_external_code(cls, exe_file_path: str, thread_queue: list):
+        """
+        name: _nonblocking_execute_external_code
+        definition: gui_func.py
+        description: Runs the modeling in a seperate thread to keep thr GUI interactive.
+        @params:
+        1. cls: Class object
+        2. exe_file_path: Path of the exec file
+        3. thread_queue: List of all the running threads
+        @returns: None
+        """
         raise NotImplementedError("This function needs to be implemented in child class by `Om Pandey`")
 
     @classmethod
     @PlotEncapsulator
     def _plot_first_2D_data(cls, output_file_path: str, time_file_path: str):
+        """
+        name: _plot_first_2D_data
+        definition: gui_func.py
+        description: Plot the concentration vs time graph for experimental data.
+        @params:
+        1. cls: Class object
+        2. output_file_path: Path of the file containing the experimental data
+        3. time_file_path: Path of the file containing the time stamps
+        @returns: None
+        """
         raise NotImplementedError("This function needs to be implemented in child class by `Navya`")
 
     @classmethod
     @PlotEncapsulator
     def _plot_second_2D_data(cls, output_file_path: str, time_file_path: str):
+        """
+        name: _plot_second_2D_data
+        definition: gui_func.py
+        description: Plot the concentration vs time graph for experimental data.
+        @params:
+        1. cls: Class object
+        2. output_file_path: Path of the file containing the simulated data
+        3. time_file_path: Path of the file containing the time stamps
+        @returns: None
+        """
         raise NotImplementedError("This function needs to be implemented in child class by `Navya`")
 
     @classmethod
     @PlotEncapsulator
     def _plot_both_2D_data(cls, output_file_path: str, time_file_path: str):
+        """
+        name: _plot_second_2D_data
+        definition: gui_func.py
+        description: Plot the combined experimental and simulated data in a single graph.
+        @params:
+        1. cls: Class object
+        2. output_file_path: Path of the file containing the simulated data
+        3. time_file_path: Path of the file containing the time stamps
+        @returns: None
+        """
         raise NotImplementedError("This function needs to be implemented in child class by `Navya`")
-
+    
+    # This function generates the overall GUI and controls the overall placements of different components.
     def _create_layout(self):
 
         self._GUIKeys = {
@@ -290,6 +331,7 @@ class GUIBase(object):
 
             return self._window
 
+    # Function to plot all the three graphs and display them in their repsective tabs.
     def _draw_plots(self):
 
         fig1 = self._plot_first_2D_data("./output.dat", self._second_input_path)
@@ -299,6 +341,7 @@ class GUIBase(object):
         self._draw_plot_with_toolbar(self.window['fig_plot_2'].TKCanvas, fig2, self.window['controls_plot_2'].TKCanvas)
         self._draw_plot_with_toolbar(self.window['fig_plot_3'].TKCanvas, fig3, self.window['controls_plot_3'].TKCanvas)
 
+    # Function to check if any thread is still running.
     def _is_any_thread_running(self):
 
         if self._thread_queue:
@@ -312,7 +355,7 @@ class GUIBase(object):
         
         return True if self._thread_queue else False
 
-
+    # Controls the functionality of the Run/Refresh buttons. Checks if all the files are uploaded or not.
     def refresh(self):
 
         if self._first_input_path is None:
@@ -486,7 +529,17 @@ class GUIBase(object):
         raise NotImplementedError("This function is to be implemented in child class")
 
     def _import_timestamps_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
-
+        """
+        name: _import_timestamps_data
+        definition: gui_func.py
+        description: parsing the timestamps from the file for plotting.
+        @params:
+        1. cls: Class object
+        2. first_file_path: Path of the first input file
+        3. second_file_path: Path of the second input file
+        4. third_file_path: Path of the third input file
+        @returns: List of all the timestamps.
+        """
         raise NotImplementedError("This function is to be implemented in child class")
 
     def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
@@ -494,7 +547,17 @@ class GUIBase(object):
         raise NotImplementedError("This function is to be implemented in child class")
 
     def _import_concentration_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
-
+        """
+        name: _import_concentration_data
+        definition: gui_func.py
+        description: parsing the concentration dat from the file for plotting.
+        @params:
+        1. cls: Class object
+        2. first_file_path: Path of the first input file
+        3. second_file_path: Path of the second input file
+        4. third_file_path: Path of the third input file
+        @returns: List of all the concentration values.
+        """
         raise NotImplementedError("This function is to be implemented in child class")
 
 
