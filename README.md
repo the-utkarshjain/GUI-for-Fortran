@@ -3,7 +3,7 @@
 The repository for the final project in CS308-Large Applications Practicum. GUI is built in python for executing forward/backward modeling software built on Fortran.
 
 ## Group Members:
-|  | #Name  | #RollNo.  |
+|  | Name  | RollNo.  |
 | :---:   | :-: | :-: |
 | A | Utkarsh Jain | B17029 |
 | B | Jhalak Choudhary | B17046 |
