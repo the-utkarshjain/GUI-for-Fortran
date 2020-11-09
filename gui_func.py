@@ -1,4 +1,4 @@
-from gui_base import GUIBase, PlotEncapsulator
+from gui_base import GUIBase, PlotEncapsulator, GUI_exception
 import threading
 import time
 import numpy as np
@@ -14,6 +14,7 @@ class GUIMain(GUIBase):
         super(GUIMain, self).__init__(*args, **kwargs)
 
     @classmethod
+    @GUI_exception
     def _refresh_utility(cls, first_file_path: str, second_file_path: str, third_file_path: str, memory: dict) -> bool:
         isupdates = False
         checksum_file_1 = hashlib.sha256(open(first_file_path, 'r').read().encode('utf-8')).hexdigest()
@@ -38,6 +39,7 @@ class GUIMain(GUIBase):
         return isupdates
 
     @classmethod
+    @GUI_exception
     def _nonblocking_execute_external_code(cls, exe_file_path: str, thread_queue: list):
         def target_func(x):
             return subprocess.call([x])
@@ -48,6 +50,7 @@ class GUIMain(GUIBase):
 
     @classmethod
     @PlotEncapsulator
+    @GUI_exception
     def _plot_first_2D_data(cls, output_file_path: str, time_file_path: str):
         time = []
         conc = []
@@ -72,6 +75,7 @@ class GUIMain(GUIBase):
 
     @classmethod
     @PlotEncapsulator
+    @GUI_exception
     def _plot_second_2D_data(cls, output_file_path: str, time_file_path: str):
         time = []
         conc = []
@@ -96,6 +100,7 @@ class GUIMain(GUIBase):
 
     @classmethod
     @PlotEncapsulator
+    @GUI_exception
     def _plot_both_2D_data(cls, output_file_path: str, time_file_path: str):
         time = []
         conc1 = []
@@ -123,6 +128,7 @@ class GUIMain(GUIBase):
         plt.legend()
     
     @classmethod
+    @GUI_exception
     def _inplace_update_variable_dictionary(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:        
         try:
             file1 = open(first_file_path, "r")
@@ -169,12 +175,13 @@ class GUIMain(GUIBase):
             file3.close()
 
     @classmethod
+    @GUI_exception
     def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
         try:
             file1 = open(first_file_path, "w")
             lines = ["Mesopore seepage velocity", "Macropore seepage velocity", "Solute mass transfer rate b/w meso-micropore", "Solute mass transfer rate b/w meso-macropore", "Dispersivity", "No. of observation time steps"]
             for line in lines:
-                file1.write(variable_dictionary(line)+str("\n"))
+                file1.write(variable_dictionary[line]+str("\n"))
         finally:
             file1.close()
 
@@ -182,23 +189,23 @@ class GUIMain(GUIBase):
             file3 = open(third_file_path, "w")
             lines = ["nz", "nm"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary(line)+str(" "))
-            file3.write(variable_dictionary(lines[-1])+str("\n"))
+                file3.write(variable_dictionary[line]+str(" "))
+            file3.write(variable_dictionary[lines[-1]]+str("\n"))
             lines = ["Length", "Bulk density of porous media", "Run time", "Pulse time", "delta_t", "delta_x"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary(line)+str(" "))
-            file3.write(variable_dictionary(lines[-1])+str("\n"))
+                file3.write(variable_dictionary[line]+str(" "))
+            file3.write(variable_dictionary[lines[-1]]+str("\n"))
             lines = ["Porosity of the macropore region", "Porosity of the mesopore region", "Porosity of the micropore region"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary(line)+str(" "))
-            file3.write(variable_dictionary(lines[-1])+str("\n"))
+                file3.write(variable_dictionary[line]+str(" "))
+            file3.write(variable_dictionary[lines[-1]]+str("\n"))
             lines = ["Instantaneous sorption fraction in macropore region", "Instantaneous sorption fraction in mesopore region", "Instantaneous sorption fraction in micropore region", "Fraction of sorption site available for macropore region", "Fraction of sorption site available for mesopore region", "Fraction of sorption site available for immobile region"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary(line)+str(" "))
-            file3.write(variable_dictionary(lines[-1])+str("\n"))
+                file3.write(variable_dictionary[line]+str(" "))
+            file3.write(variable_dictionary[lines[-1]]+str("\n"))
             lines = ["Equilibrium sorption coefficient in macropore region", "Equilibrium sorption coefficient in mesopore region", "Equilibrium sorption coefficient in micropore region", "Rate-limited sorbed coefficient in macropore region", "Rate-limited sorbed coefficient in mesopore region", "Rate-limited sorbed coefficient in micropore region"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary(line)+str(" "))
-            file3.write(variable_dictionary(lines[-1])+str("\n"))
+                file3.write(variable_dictionary[line]+str(" "))
+            file3.write(variable_dictionary[lines[-1]]+str("\n"))
         finally:
             file3.close()

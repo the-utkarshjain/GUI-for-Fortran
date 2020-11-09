@@ -4,7 +4,7 @@ try:
     assert sys.version_info >= (3, 7) 
 except AssertionError as aE:
     raise OSError(ver_error)
-
+import functools
 import PySimpleGUI as sg
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,6 +14,8 @@ import pickle
 from collections import deque
 import os
 import shutil
+import warnings
+import uuid
 
 
 class _ToolbarGUI(NavigationToolbar2Tk):
@@ -21,9 +23,26 @@ class _ToolbarGUI(NavigationToolbar2Tk):
     def __init__(self, *args, **kwargs):
         super(_ToolbarGUI, self).__init__(*args, **kwargs)
 
+def GUI_exception(f):
+    @functools.wraps(f)
+    def func(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            GUIError(f.__name__, e)
+    return func
+
+class GUIError(RuntimeError):
+
+    def __init__(self, name, message):
+
+        ID = str(uuid.uuid1())
+        GUI_Warning = "[{}] Error in {}: {}".format(ID, name, message)
+        warnings.warn(GUI_Warning)
+        sg.popup(GUI_Warning, title="Error")
+
 
 def PlotEncapsulator(func):
-
     def encapsulator(*args, **kwargs):
         plt.figure(1)
         fig = plt.gcf()
@@ -36,7 +55,6 @@ def PlotEncapsulator(func):
         func(*args, **kwargs)
         plt.grid()
         return fig
-
     return encapsulator
 
 
@@ -92,6 +110,9 @@ class GUIBase(object):
             "No. of observation time steps": None,
         }
 
+        self._base_value = [[idx, "NA"] for idx in range(1, 43)] 
+        self._timestamp_value = [[idx, "NA"] for idx in range(1, 43)]
+
         if not os.path.exists("./.tmp"):
             os.mkdir("./.tmp")
         
@@ -136,6 +157,36 @@ class GUIBase(object):
             ]
         ]
         return tab_layout
+
+
+    def _create_editable_table_tab(self):
+        tab_layout = [[
+            sg.Column(
+                layout=[
+                    [sg.Text("Base Values", justification="center")],
+                    [sg.Table(values=self._base_value, headings=["S.No", "Current Value"],
+                        col_widths=90, justification='left', font=("Helvetica 10 bold"),
+                        num_rows=8, key="-BASE-VALUE-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="black", enable_events=True)],
+                    [sg.Button("Import Data", enable_events=True, key="-BASE-COPY-", auto_size_button=True)]],
+                        element_justification="center"
+            ), 
+            sg.VSeperator(),
+            sg.Column(
+                layout=
+                    [
+                        [sg.Text("Timestamp Values", justification="center")],
+                        [sg.Table(values=self._timestamp_value, headings=["S.No", "Current Value"],
+                        col_widths=90, justification='left', font=("Helvetica 10 bold"),
+                        num_rows=8, key="-TIMESTAMP-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="black", enable_events=True)],
+                        [sg.Button("Import Data", enable_events=True, key="-TIMESTAMP-COPY-", auto_size_button=True)]
+                ],
+                element_justification="center"
+            )
+            ]
+        ]
+
+        return tab_layout
+
 
     @staticmethod
     def _draw_plot_with_toolbar(canvas, fig, canvas_toolbar):
@@ -208,6 +259,7 @@ class GUIBase(object):
         plot2_layout = self._create_plot_tab("controls_plot_2", "fig_plot_2")
         plot3_layout = self._create_plot_tab("controls_plot_3", "fig_plot_3")
         plot4_layout = self._create_search_tab()
+        plot5_layout = self._create_editable_table_tab()
 
         layout = [
             [sg.Text('Plotter GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
@@ -218,7 +270,8 @@ class GUIBase(object):
             sg.Button(button_text="Run / Refresh", key="-REFRESH-")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
                                                          sg.Tab('Dual Plot', plot3_layout),
-                                                         sg.Tab('Edit Variables', plot4_layout)]])],
+                                                         sg.Tab('Edit Variables', plot4_layout),
+                                                         sg.Tab('Experimental Data', plot5_layout)]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
             [sg.Output(size=(114, 5), key="-output-")]
 
@@ -284,6 +337,7 @@ class GUIBase(object):
 
         self._nonblocking_execute_external_code(self._exe_file_path, self._thread_queue)
         self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
+        self.window["-VARIABLE-TABLE-"].update(values=[[x, str(self._VariableDict[x])] for x in self._VariableDict.keys()])
 
     @property
     def is_processing(self):
@@ -376,6 +430,61 @@ class GUIBase(object):
     def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
 
         raise NotImplementedError("This function needs to be implemented in child class")
+
+    def edit_table_cells(self, table_key, row_value):
+        if table_key == "-BASE-VALUE-TABLE-":
+            new_val = sg.popup_get_text("Enter value for entry {} from Base Values".format(row_value+1), default_text=str(self._base_value[row_value][1]))
+            if new_val:
+                row_value = int(row_value)
+                self._base_value[row_value][1] = float(new_val)
+                self.window[table_key].update(values=self._base_value)
+
+        if table_key == "-TIMESTAMP-TABLE-":
+            new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
+            if new_val:
+                row_value = int(row_value)
+                self._timestamp_value[row_value][1] = float(new_val)
+                self.window[table_key].update(values=self._timestamp_value)
+
+    def _new_window_for_copy_paste(self):
+        layout = [[sg.Text('< Data Importer >', font=('Consolas', 10), size=(90, 1), key='_INFO_', justification="left")],
+                  [sg.Multiline(font=('Consolas', 12), size=(90, 25), key='_BODY_')],
+                  [sg.Button("Save", enable_events=True, key="-save-")]]
+
+        window = sg.Window('Edit Window', layout=layout, margins=(0, 0), return_keyboard_events=True, finalize=True, element_justification="center")
+
+        while True:
+            events, values = window.read()
+
+            if events == sg.WINDOW_CLOSED:
+                break
+            if events == "-save-":
+                break
+                
+        window.close()
+        return values["_BODY_"] if values and values.get("_BODY_", None) else ""
+
+    def import_data(self, section_key):
+        value = self._new_window_for_copy_paste()
+
+        if section_key == "-BASE-COPY-":
+            value = value.split("\n")
+            value = list(filter(lambda x: len(x) > 0, value))
+
+            self._base_value = [[idx+1, val] for idx, val in enumerate(value)]
+            self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
+
+        if section_key == "-TIMESTAMP-COPY-":
+            value = value.split("\n")
+            value = list(filter(lambda x: len(x) > 0, value))
+
+            self._timestamp_value = [[idx+1, val] for idx, val in enumerate(value)]
+            self.window["-TIMESTAMP-TABLE-"].update(values=self._timestamp_value)
+
+
+
+        
+
         
 
 

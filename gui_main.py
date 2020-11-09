@@ -4,7 +4,7 @@ from gui_func import GUIMain
 if __name__ == "__main__":
 
     GUI = GUIMain(window_size=(800, 700), title="GUI", auto_size_buttons=False, 
-            auto_size_text=False, finalize=True, element_justification='center')
+            auto_size_text=False, finalize=True, element_justification='center', resizable=True)
 
     while True:
         event, values = GUI.window.read(timeout=50)
@@ -53,5 +53,10 @@ if __name__ == "__main__":
             GUI.PopupAnimated(None)
             GUI.unfreeze_buttons()
     
+        if event in ("-BASE-VALUE-TABLE-", "-TIMESTAMP-TABLE-"):
+            GUI.edit_table_cells(event, values[event][0])
+
+        if event in ("-TIMESTAMP-COPY-", "-BASE-COPY-"):
+            GUI.import_data(event)
 
     GUI.window.close()
