@@ -216,8 +216,18 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _import_timestamps_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+        try:
+            file2 = open(second_file_path, "r")
+            skip = int(file2.readline())
+            for i in range(skip):
+                file2.readline()
+            timestamps_data = file2.read().splitlines()
+        finally:
+            file2.close()
+        time_series = [float(i) for i in timestamps_data]
+        return time_series
 
-        return []
+print(time_series)
 
     @GUI_exception
     def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
@@ -225,4 +235,12 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _import_concentration_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
-        return []
+        try:
+            file1 = open(first_file_path, "r")
+            for i in range(6):
+                file1.readline()
+            concentration_data = file1.read().splitlines()
+        finally:
+            file1.close()
+        consentration_series = [float(i) for i in concentration_data]
+        return consentration_series
