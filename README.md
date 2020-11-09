@@ -18,7 +18,7 @@ The repository for the final project in CS308-Large Applications Practicum. GUI 
 3. Open terminal and execute with `python3 gui_main.py`
 4. The application window will appear on the screen.
 
-Requirements: PySimpleGUI 
+Requirements: https://github.com/the-utkarshjain/GUI-for-Fortran/blob/master/requirements.txt 
 
-Please refer to the File-Stats wiki for further documentation: https://github.com/the-utkarshjain/GUI-for-Fortran/wiki
+Please refer to the GUI-for-Fortran wiki for further documentation: https://github.com/the-utkarshjain/GUI-for-Fortran/wiki
  
