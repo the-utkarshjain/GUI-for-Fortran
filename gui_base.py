@@ -1,3 +1,36 @@
+"""
+@name 
+    `gui_base.py`
+
+@description 
+    `src file for GUI base class`
+
+@package 
+    `GUI for Fortran/C++ Application`
+
+@official_repository 
+    `https://github.com/the-utkarshjain/GUI-for-Fortran`
+
+@contributors 
+    * Abhishek Bhardwaj
+    * Utkarsh Jain
+    * Jhalak Choudhary
+    * Navya
+    * Om Pandey`
+
+@dependency
+    * PySimpleGUI >= v4.30.0
+    * numpy >= v18.0
+    * matplotlib >= v3.3.2
+
+"""
+
+
+r'''
+Import necessary packages,
+works only for python >= v3.7
+'''
+
 import sys
 ver_error = "GUI script works for python version >= 3.7" 
 try:
@@ -19,11 +52,20 @@ import uuid
 
 
 class _ToolbarGUI(NavigationToolbar2Tk):
+    r'''
+    Create custom toolbar for <matplotplib.pyplot>
+    '''
 
     def __init__(self, *args, **kwargs):
         super(_ToolbarGUI, self).__init__(*args, **kwargs)
 
+
 def GUI_exception(f):
+    r'''
+    Wrapper function to handle GUI function 
+    exceptions
+    '''
+
     @functools.wraps(f)
     def func(*args, **kwargs):
         try:
@@ -32,7 +74,12 @@ def GUI_exception(f):
             GUIError(f.__name__, e)
     return func
 
+
+
 class GUIError(RuntimeError):
+    r'''
+    Custom exception class to raise GUI errors
+    '''
 
     def __init__(self, name, message):
 
@@ -43,6 +90,9 @@ class GUIError(RuntimeError):
 
 
 def PlotEncapsulator(func):
+    r'''
+    Wrapper function to catch matplotlib figure into <matplotlib.pyplot.figure> 
+    '''
     def encapsulator(*args, **kwargs):
         plt.figure(1)
         fig = plt.gcf()
@@ -59,6 +109,20 @@ def PlotEncapsulator(func):
 
 
 class GUIBase(object):
+    r'''
+    <__main__.GUIBase> class implementing GUI skeleton.
+    Note: This is super class, use GUIMain class during implementation
+
+    Usage:
+        >>> GUI = GUIMain(window_size=(800, 700), title="GUI", auto_size_buttons=False, 
+                auto_size_text=False, finalize=True, element_justification='center', resizable=True)
+
+        >>> while True:
+                event, values = GUI.window.read(timeout=50)
+
+                if event == GUI.WIN_CLOSED:
+                    break 
+    '''
 
     def __init__(self, window_size, theme="Dark Teal 4", **kwargs):
 

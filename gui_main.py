@@ -1,3 +1,25 @@
+"""
+@name 
+    `gui_main.py`
+
+@description 
+    `src file for running GUI`
+
+@package 
+    `GUI for Fortran/C++ Application`
+
+@official_repository 
+    `https://github.com/the-utkarshjain/GUI-for-Fortran`
+
+@contributors 
+    * Abhishek Bhardwaj
+    * Utkarsh Jain
+    * Jhalak Choudhary
+    * Navya
+    * Om Pandey`
+
+"""
+
 from gui_func import GUIMain
 
 

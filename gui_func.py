@@ -1,3 +1,25 @@
+"""
+@name 
+    `gui_func.py`
+
+@description 
+    `src file for GUI Main class, subclass of <GUIBase>`
+
+@package 
+    `GUI for Fortran/C++ Application`
+
+@official_repository 
+    `https://github.com/the-utkarshjain/GUI-for-Fortran`
+
+@contributors 
+    * Abhishek Bhardwaj
+    * Utkarsh Jain
+    * Jhalak Choudhary
+    * Navya
+    * Om Pandey`
+
+"""
+
 from gui_base import GUIBase, PlotEncapsulator, GUI_exception
 import threading
 import time
