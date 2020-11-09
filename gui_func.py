@@ -209,3 +209,20 @@ class GUIMain(GUIBase):
             file3.write(variable_dictionary[lines[-1]]+str("\n"))
         finally:
             file3.close()
+
+    @GUI_exception
+    def _export_timestamps_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
+        pass
+
+    @GUI_exception
+    def _import_timestamps_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+
+        return []
+
+    @GUI_exception
+    def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
+        pass
+
+    @GUI_exception
+    def _import_concentration_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+        return []

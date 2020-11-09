@@ -481,6 +481,24 @@ class GUIBase(object):
             self._timestamp_value = [[idx+1, val] for idx, val in enumerate(value)]
             self.window["-TIMESTAMP-TABLE-"].update(values=self._timestamp_value)
 
+    def _export_timestamps_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
+
+        raise NotImplementedError("This function is to be implemented in child class")
+
+    def _import_timestamps_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+
+        raise NotImplementedError("This function is to be implemented in child class")
+
+    def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
+
+        raise NotImplementedError("This function is to be implemented in child class")
+
+    def _import_concentration_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+
+        raise NotImplementedError("This function is to be implemented in child class")
+
+
+
 
 
         
