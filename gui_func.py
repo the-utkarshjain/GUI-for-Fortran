@@ -29,6 +29,7 @@ import os
 import hashlib
 import random
 import subprocess
+from copy import deepcopy
 
 class GUIMain(GUIBase):
 
@@ -58,7 +59,7 @@ class GUIMain(GUIBase):
         if isupdates == False:
             print("No updates found in the input file.")
 
-        return isupdates
+        return type(isupdates) is bool
 
     @classmethod
     @GUI_exception
@@ -234,7 +235,11 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _export_timestamps_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
-        pass
+        time_series_copy = map(lambda x: str(x), time_series)
+        as_string = "\n".join(time_series_copy)
+
+        with open(second_file_path, "w") as f:
+            f.write(as_string)
 
     @GUI_exception
     def _import_timestamps_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
@@ -251,7 +256,11 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
-        pass
+        time_series_copy = map(lambda x: str(x), time_series)
+        as_string = "\n".join(time_series_copy)
+
+        with open(first_file_path, "w") as f:
+            f.write(as_string)
 
     @GUI_exception
     def _import_concentration_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:

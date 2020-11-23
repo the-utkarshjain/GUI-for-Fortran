@@ -445,6 +445,12 @@ class GUIBase(object):
         self._nonblocking_execute_external_code(self._exe_file_path, self._thread_queue)
         self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
         self.window["-VARIABLE-TABLE-"].update(values=[[x, str(self._VariableDict[x])] for x in self._VariableDict.keys()])
+        to_write = self._import_timestamps_data(self.first_input_path, self.second_input_path, self.third_input_path)
+        self._timestamp_value = [[idx+1, val] for idx, val in enumerate(to_write)]
+        to_write = self._import_concentration_data(self.first_input_path, self.second_input_path, self.third_input_path)
+        self._base_value = [[idx+1, val] for idx, val in enumerate(to_write)]
+        self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
+        self.window["-TIMESTAMP-TABLE-"].update(values=self._timestamp_value)
 
     @property
     def is_processing(self):
@@ -545,6 +551,8 @@ class GUIBase(object):
                 row_value = int(row_value)
                 self._base_value[row_value][1] = float(new_val)
                 self.window[table_key].update(values=self._base_value)
+                to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
+                self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
 
         if table_key == "-TIMESTAMP-TABLE-":
             new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
@@ -552,6 +560,8 @@ class GUIBase(object):
                 row_value = int(row_value)
                 self._timestamp_value[row_value][1] = float(new_val)
                 self.window[table_key].update(values=self._timestamp_value)
+                to_save = [1, 16.87] + list(map(lambda x: x[1], self._timestamp_value))
+                self._export_timestamps_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
 
     def _new_window_for_copy_paste(self):
         layout = [[sg.Text('< Data Importer >', font=('Consolas', 10), size=(90, 1), key='_INFO_', justification="left")],
@@ -579,7 +589,10 @@ class GUIBase(object):
             value = list(filter(lambda x: len(x) > 0, value))
 
             self._base_value = [[idx+1, val] for idx, val in enumerate(value)]
+            to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
             self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
+            self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
+
 
         if section_key == "-TIMESTAMP-COPY-":
             value = value.split("\n")
@@ -587,6 +600,8 @@ class GUIBase(object):
 
             self._timestamp_value = [[idx+1, val] for idx, val in enumerate(value)]
             self.window["-TIMESTAMP-TABLE-"].update(values=self._timestamp_value)
+            to_save = [1, 16.87] + list(map(lambda x: x[1], self._timestamp_value))
+            self._export_timestamps_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
 
     def _export_timestamps_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
 
