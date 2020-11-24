@@ -59,6 +59,8 @@ if __name__ == "__main__":
             GUI.third_input_path = values["-FILE3-"]
             GUI.exe_file_path = values["-FILE4-"]
             GUI.refresh()
+        elif event == "PE/FM":
+            GUI.run_parameter_estimation()
 
         if event == "-SEARCH-":
             GUI.refresh_search_list(values['-SEARCH-'])

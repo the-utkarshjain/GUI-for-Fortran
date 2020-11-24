@@ -16,7 +16,7 @@
     * Utkarsh Jain
     * Jhalak Choudhary
     * Navya
-    * Om Pandey`
+    * Om Pandey
 
 @dependency
     * PySimpleGUI >= v4.30.0
@@ -49,6 +49,11 @@ import os
 import shutil
 import warnings
 import uuid
+from gui_radio import GUIVariableSetter, GUILimitSetter
+import subprocess
+from collections import defaultdict
+import threading
+import time
 
 
 class _ToolbarGUI(NavigationToolbar2Tk):
@@ -138,10 +143,11 @@ class GUIBase(object):
         self._GUIKeys = {}
         self._window = None
         self._rendered_layout = None
-        sg.theme(theme)
+        # sg.theme(theme)
         self.WIN_CLOSED = sg.WIN_CLOSED
         self.PopupAnimated = sg.PopupAnimated
         self.DEFAULT_BASE64_LOADING_GIF = sg.DEFAULT_BASE64_LOADING_GIF
+        self.processing = False
         self._VariableDict = {
             "nz": None,
             "nm": None,
@@ -372,7 +378,8 @@ class GUIBase(object):
             sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse"),
             sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse"),
             sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse"),
-            sg.Button(button_text="Run / Refresh", key="-REFRESH-")],
+            sg.Button(button_text="Run / Refresh", key="-REFRESH-"),
+            sg.Button(button_text="PE Mode", key="PE/FM")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
                                                          sg.Tab('Dual Plot', plot3_layout),
                                                          sg.Tab('Edit Variables', plot4_layout),
@@ -454,7 +461,7 @@ class GUIBase(object):
 
     @property
     def is_processing(self):
-        return self._is_any_thread_running()
+        return self._is_any_thread_running() or self.processing
 
     def freeze_buttons(self):
         self.window["File1 Browse"].update(disabled=True)
@@ -639,15 +646,156 @@ class GUIBase(object):
         """
         raise NotImplementedError("This function is to be implemented in child class")
 
+    def run_parameter_estimation(self):
 
+        variable_name = [
+            "Mesopore seepage velocity",
+            "Macropore seepage velocity",
+            "Solute mass transfer rate b/w meso-micropore",
+            "Solute mass transfer rate b/w meso-macropore",
+            "Dispersivity",
+        ]
+        variable_alias = {
+            "Mesopore seepage velocity": "qs",
+            "Macropore seepage velocity": "qf",
+            "Solute mass transfer rate b/w meso-micropore": "omegaim",
+            "Solute mass transfer rate b/w meso-macropore": "omegasf",
+            "Dispersivity": "alpha"
+        }
 
+        ve = GUIVariableSetter(variable_name)
+        variable_state = ve.run()
 
+        with open("in_1.tpl", "w") as f:
+            f.write("ptf #\n")
+            for key in variable_alias:
+                if variable_state[key] == "determined":
+                    f.write("{}\n".format(self._VariableDict[key]))
+                else:
+                    f.write("# {} #\n".format(variable_alias[key]))
+            f.write("{}\n".format(len(self._base_value)))
+            f_values = map(lambda x: str(x[1]), self._base_value)
+            f.write("\n".join(f_values))
 
+        process = subprocess.Popen("tempchek.exe in_1.tpl", shell=True, stdout=subprocess.PIPE)
+        process_out = "{}".format(process.stdout.read().decode("utf-8"))
+
+        if "No errors encountered" in process_out:
+            print("Executed Successfully")
+            # print(process_out)
+
+        with open("in_1.par", "w") as f:
+            f.write("single point\n")
+            for key in variable_alias:
+                if variable_state[key] != "determined":
+                    f.write("{} {} 1.0 0.0\n".format(variable_alias[key], variable_state[key]))
         
+        process = subprocess.Popen("tempchek.exe in_1.tpl in_1.dat in_1.par", shell=True, stdout=subprocess.PIPE)
+        process_out = "{}".format(process.stdout.read().decode("utf-8"))
+        # print(process_out)
 
+        with open("output.ins", "w") as f:
+            f.write("pif #\n")
+            to_write = ["l1 (o{})19:26".format(idx) for idx in range(1, len(self._base_value)+1)]
+            f.write("\n".join(to_write))
+
+        process = subprocess.Popen("inschek.exe output.ins output.dat", shell=True, stdout=subprocess.PIPE)
+        process_out = "{}".format(process.stdout.read().decode("utf-8"))
+        # print(process_out)
+
+        with open("measure.obf", "w") as f:
+            to_write = map(lambda x: "o{} {}".format(x[0], x[1]), self._base_value)
+            f.write("\n".join(to_write))
+
+        process = subprocess.Popen("pestgen.exe test in_1.par measure.obf", shell=True, stdout=subprocess.PIPE)
+        process_out = "{}".format(process.stdout.read().decode("utf-8"))
+        # print(process_out)
+
+        test_pst = ""
+
+        with open("test.pst", "r") as f:
+            test_pst = f.readlines()
+
+        test_pst_store = defaultdict(list)
+        curr = None
+
+        for line in test_pst:
+            if "*" in line:
+                curr = line.replace("\n", "")
+            elif curr:
+                test_pst_store[curr].append(line.replace("\n", ""))
+
+        variable_name = {}
+
+        for ln in test_pst_store["* parameter data"]:
+            line = ln.split()
+            variable_name[line[0]] = {"lower": line[4], "upper": line[5]}
+
+        bound_gui = GUILimitSetter(variable_name)
+        variable_state = bound_gui.run()
+
+        for idx, ln in enumerate(test_pst_store["* parameter data"]):
+            line = ln.split()
+            test_pst_store["* parameter data"][idx] = "  ".join([line[0], line[1], line[2], line[3], variable_state[line[0]]["lower"], variable_state[line[0]]["upper"]] + line[6:])
+
+       
+        test_pst_store["* model command line"][0] = "test"
+        test_pst_store["* model input/output"][0] = "in_1.tpl  in_1.dat"
+        test_pst_store["* model input/output"][1] = "output.ins  output.dat"
+
+        with open("test.pst", "w") as f:
+            f.write("pcf\n")
+            for key in test_pst_store:
+                f.write("{}\n".format(key))
+                if test_pst_store[key]:
+                    f.write("\n".join(test_pst_store[key]))
+                    f.write("\n")
+
+        process = subprocess.Popen("pestchek.exe test", shell=True, stdout=subprocess.PIPE)
+        process_out = "{}".format(process.stdout.read().decode("utf-8"))
+        # print(process_out)
         
+        def pest_process(obj):
+            obj.processing = True
+            process = subprocess.Popen("pest.exe test", shell=True, stdout=subprocess.PIPE)
+            process_out = "{}".format(process.stdout.read().decode("utf-8"))
+            # print(process_out)
+            obj.processing = False
+
+        pest_thread = threading.Thread(target=pest_process, args=(self,), daemon=True)
+        pest_thread.start()
+
+        while self.processing:
+            self.PopupAnimated(self.DEFAULT_BASE64_LOADING_GIF, background_color='green', transparent_color='green')
+            self.freeze_buttons()
+            time.sleep(0.1)
+        
+        self.PopupAnimated(None)
+        self.unfreeze_buttons()
+
+        test_rec = {}
+
+        with open("test.rec", "r") as f:
+            test_rec = f.readlines()
+
+        for idx, line in enumerate(test_rec):
+            test_rec[idx] = test_rec[idx].replace("\n", "")
+
+        test_rec_store = defaultdict(list)
+        curr = None
+
+        for line in test_rec:
+            if "----->" in line:
+                curr = line.replace("\n", "")
+            if curr:
+                test_rec_store[curr].append(line.replace("\n", ""))
 
 
-    
+        def show_information(content, title):
+            layout = [[sg.Multiline(default_text=content, size=(60,20))]]
+            window = sg.Window(title=title, layout=layout)
+            events, values = window.read(close=True)
 
+        show_information("\n".join(test_rec_store["K-L information statistics ----->"]), title="K-L information statistics")
+        show_information("\n".join(test_rec_store["Parameters ----->"]), title="Parameter Estimation Result")
 
