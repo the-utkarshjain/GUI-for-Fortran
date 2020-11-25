@@ -46,3 +46,47 @@ class GUIVariableSetter(object):
 
         self.window.close()
         return self.variable_status
+    
+class GUILimitSetter(object):
+
+    def __init__(self, variable_dict):
+        variable_name = variable_dict.keys()
+
+        self.variable_state = deepcopy(variable_dict)
+        self.layout = [
+            [sg.Column(layout=[[sg.Text("Bound Settings", font=("Helvetica", 16))]], element_justification="center", expand_x=True)],
+            [sg.Column(layout = [[sg.Text("", pad=(7, 5), font=("Helvetica 8 bold"))]] + [[sg.Text(var_name, pad=(4, 4), font=("Helvetica 8 bold"))] for var_name in variable_name]),
+            sg.VSeparator(),
+            sg.Column(layout = [[sg.Text("Lower Bound  ", pad=(6, 5), font=("Helvetica 8 bold")), sg.Text("Upper Bound  ", pad=(6, 5), font=("Helvetica 8 bold"))]] + [[sg.In(default_text=variable_dict[var_name]["lower"], key="lower_{}".format(var_name), enable_events=True, size=(13, 1)), sg.In(default_text=variable_dict[var_name]["upper"], key="upper_{}".format(var_name), size=(13, 1), enable_events=True)] for var_name in variable_name])],
+            [sg.Column(layout=[[sg.Button("Submit", key="exit", pad=(2, 2))]], expand_x=True, element_justification="center")]
+        ]
+
+        self.window = sg.Window(title="Bound Setter", layout=self.layout, use_default_focus=False)
+
+    def run(self):
+
+        while True:
+            events, values = self.window.read()
+            if events in [sg.WINDOW_CLOSED, "exit"]:
+                for key in self.variable_state:
+                    if self.variable_state[key]["lower"] is None or self.variable_state[key]["upper"] is None:
+                        sg.popup_error("You have to supply input for every variable")
+                    continue
+                break
+            else:
+                prefix, base = events.split("_")
+                if prefix == "lower":
+                    try:
+                        self.variable_state[base]["lower"] = str(float(values[events]))
+                    except ValueError:
+                        sg.popup_error("Oops!, values should be float, not letters")
+                    continue
+                if prefix == "upper":
+                    try:
+                        self.variable_state[base]["upper"] = str(float(values[events]))
+                    except ValueError:
+                        sg.popup_error("Oops!, values should be float, not letters")
+                    continue
+
+        self.window.close()
+        return self.variable_state
