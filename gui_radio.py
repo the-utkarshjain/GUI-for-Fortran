@@ -90,3 +90,31 @@ class GUILimitSetter(object):
 
         self.window.close()
         return self.variable_state
+if __name__ == "__main__":
+
+    test_rec = {}
+    from collections import defaultdict
+
+    with open("test.rec", "r") as f:
+        test_rec = f.readlines()
+
+    for idx, line in enumerate(test_rec):
+        test_rec[idx] = test_rec[idx].replace("\n", "")
+
+    test_rec_store = defaultdict(list)
+    curr = None
+
+    for line in test_rec:
+        if "----->" in line:
+            curr = line.replace("\n", "")
+        if curr:
+            test_rec_store[curr].append(line.replace("\n", ""))
+
+    def show_information(content, title):
+        layout = [[sg.Multiline(default_text=content, size=(60,20))]]
+        window = sg.Window(title=title, layout=layout)
+        events, values = window.read(close=True)
+
+    show_information("\n".join(test_rec_store["K-L information statistics ----->"]), title="K-L information statistics")
+    show_information("\n".join(test_rec_store["Parameters ----->"]), title="Parameter Estimation Result")
+
