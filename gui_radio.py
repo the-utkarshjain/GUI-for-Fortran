@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 from copy import deepcopy
+from collections import defaultdict
 
 
 class GUIVariableSetter(object):
@@ -92,32 +93,95 @@ class GUILimitSetter(object):
         return self.variable_state
 
 
-if __name__ == "__main__":
+class GUIModeInitializer(object):
 
-    test_rec = {}
-    from collections import defaultdict
+    def __init__(self, modes, all_variables, variables_dict, auto_dict=None):
 
-    with open("test.rec", "r") as f:
-        test_rec = f.readlines()
+        variables_dict["Generic"] = {variable: None for variable in all_variables}
+        if not "Generic" in modes:
+            modes.append("Generic")
+        self.modes = modes
+        self.all_variables = all_variables
+        self.variables_dict = variables_dict
+        self.variables_store = defaultdict(lambda: None)
+        self.global_mode = "Generic"
+        self.selected_color = ('red', 'white')
+        self.auto_dict = auto_dict
+        self.layout = [
+            [sg.Column(layout=[[sg.Text("Select Mode and Initialize Variables", font=("Helvetica", 16))]], element_justification="center", expand_x=True)],
+            [sg.Column(layout=[[sg.Button(mode, key=mode, button_color=self.selected_color if mode == "Generic" else None) for mode in modes]], element_justification="center", expand_x=True)],
+            [sg.Column(
+            layout = [
+                [sg.Column(layout=[[sg.Text(variable, visible=True, key=variable)] for variable in all_variables]),
+                sg.VSeperator(),
+                sg.Column(layout=[[sg.In(visible=True, key="value_" + variable, enable_events=True)] for variable in all_variables])]
+            ], scrollable=True, vertical_scroll_only=True, expand_x=True
+            )],
+            [sg.Column(layout=[[sg.Button("Next", key="exit"), sg.Button("Fill Automatically", key="auto")]], element_justification="center", expand_x=True)]
+        ]
 
-    for idx, line in enumerate(test_rec):
-        test_rec[idx] = test_rec[idx].replace("\n", "")
+        self.window = sg.Window(title="Initializer", layout=self.layout, use_default_focus=False)
 
-    test_rec_store = defaultdict(list)
-    curr = None
+    def make_invisible(self):
+        for variable in self.all_variables:
+            self.window[variable].update(visible=False)
+            self.window["value_" + variable].update(visible=False)
 
-    for line in test_rec:
-        if "----->" in line:
-            curr = line.replace("\n", "")
-        if curr:
-            test_rec_store[curr].append(line.replace("\n", ""))
+    def trigger_variables(self):
+        self.make_invisible()
+        for variable in self.variables_dict[self.global_mode]:
+            if self.variables_dict[self.global_mode][variable] is None:
+                self.window[variable].update(visible=True)
+                self.window["value_" + variable].update(visible=True, disabled=False, value="")
+            else:
+                self.window[variable].update(visible=True)
+                self.window["value_" + variable].update(visible=True, disabled=True, value=str(self.variables_dict[self.global_mode][variable]), text_color="green")
 
-    def show_information(content, title):
-        layout = [[sg.Multiline(default_text=content, size=(60,20))]]
-        window = sg.Window(title=title, layout=layout)
-        events, values = window.read(close=True)
+    def prepare_output(self):
+        output_copy = deepcopy(self.variables_dict[self.global_mode])
+        for variable in self.variables_dict[self.global_mode]:
+            if self.variables_dict[self.global_mode][variable] == None:
+                if self.variables_store[variable] == None:
+                    return None
+                else:
+                    output_copy[variable] = self.variables_store[variable]
+        return output_copy
 
-    show_information("\n".join(test_rec_store["K-L information statistics ----->"]), title="K-L information statistics")
-    show_information("\n".join(test_rec_store["Parameters ----->"]), title="Parameter Estimation Result")
 
+    def run(self):
+        
+        while True:
+            events, values = self.window.read()
+            if events == sg.WINDOW_CLOSED:
+                self.window.close()
+                return None
+            if events == "exit":
+                if self.prepare_output() == None:
+                    sg.popup_error("Oops!, All required values should be filled")
+                    continue
+                else:
+                    break
+            if events in self.modes:
+                self.global_mode = events
+                for mode in self.modes:
+                    self.window[mode].update(button_color=sg.theme_button_color())
+                self.window[events].update(button_color=self.selected_color)
+                self.trigger_variables()
+            if "value_" in events:
+                try:
+                    self.variables_store[events.replace("_", "")] = float(values[events])
+                except ValueError:
+                    sg.popup_error("Oops!, values should be float, not letters")
+                continue
+            if events == "auto":
+                for variable in self.auto_dict:
+                    if self.variables_dict[self.global_mode][variable] == None:
+                        self.window["value_"+variable].update(value=str(self.auto_dict[variable]))
+                        try:
+                            self.variables_store[variable] = float(self.auto_dict[variable])
+                        except ValueError:
+                            continue
+                            # sg.popup_error("Oops!, values should be float, not letters {}".format(self.auto_dict[variable]))
+
+        return self.prepare_output()
 

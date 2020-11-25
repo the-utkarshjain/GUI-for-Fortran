@@ -49,7 +49,7 @@ import os
 import shutil
 import warnings
 import uuid
-from gui_radio import GUIVariableSetter, GUILimitSetter
+from gui_radio import GUIVariableSetter, GUILimitSetter, GUIModeInitializer
 import subprocess
 from collections import defaultdict
 import threading
@@ -134,10 +134,10 @@ class GUIBase(object):
         self._window_size = window_size
         self._extra_argument = kwargs
         self._refreshed = False
-        self._first_input_path = None
-        self._second_input_path = None
-        self._third_input_path = None
-        self._exe_file_path = None
+        self._first_input_path = "./in_1.dat" if os.path.exists("./in_1.dat") else None
+        self._second_input_path = "./in_2.dat" if os.path.exists("./in_2.dat") else None
+        self._third_input_path = "./in_3.dat" if os.path.exists("./in_3.dat") else None
+        self._exe_file_path = "./test.exe" if os.path.exists("./test.exe") else None
         self._refresh_memory = {}
         self._thread_queue = deque()
         self._GUIKeys = {}
@@ -179,7 +179,7 @@ class GUIBase(object):
             "Dispersivity": None,
             "No. of observation time steps": None,
         }
-
+        self.is_initialized = False
         self._base_value = [[idx, "NA"] for idx in range(1, 43)] 
         self._timestamp_value = [[idx, "NA"] for idx in range(1, 43)]
 
@@ -382,7 +382,6 @@ class GUIBase(object):
             sg.Button(button_text="PE Mode", key="PE/FM")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
                                                          sg.Tab('Dual Plot', plot3_layout),
-                                                         sg.Tab('Edit Variables', plot4_layout),
                                                          sg.Tab('Experimental Data', plot5_layout)]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
             [sg.Output(size=(114, 5), key="-output-")]
@@ -394,6 +393,21 @@ class GUIBase(object):
 
     @property
     def window(self):
+        if not self.is_initialized:
+            self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
+            variable_dict = self._initialize_variables()
+            modes = variable_dict.keys()
+            all_variables = self._VariableDict.keys()
+            initializer = GUIModeInitializer(modes, all_variables, variable_dict, auto_dict=self._VariableDict)
+            result = initializer.run()
+            if result == None:
+                raise SystemExit("GUI operation terminated")
+            self._VariableDict = result
+            for key in self._VariableDict:
+                self._VariableDict[key] = str(self._VariableDict[key])
+            self._write_updated_values(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
+            self.is_initialized = True
+
         if self._window:
             return self._window
         else:
@@ -450,7 +464,6 @@ class GUIBase(object):
             return
 
         self._nonblocking_execute_external_code(self._exe_file_path, self._thread_queue)
-        self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
         self.window["-VARIABLE-TABLE-"].update(values=[[x, str(self._VariableDict[x])] for x in self._VariableDict.keys()])
         to_write = self._import_timestamps_data(self.first_input_path, self.second_input_path, self.third_input_path)
         self._timestamp_value = [[idx+1, val] for idx, val in enumerate(to_write)]
@@ -469,6 +482,7 @@ class GUIBase(object):
         self.window["File3 Browse"].update(disabled=True)
         self.window["EXE Browse"].update(disabled=True)
         self.window["-REFRESH-"].update(disabled=True)
+        self.window["PE/FM"].update(disabled=True)
 
     def unfreeze_buttons(self):
         self.window["File1 Browse"].update(disabled=False)
@@ -476,6 +490,7 @@ class GUIBase(object):
         self.window["File3 Browse"].update(disabled=False)
         self.window["EXE Browse"].update(disabled=False)
         self.window["-REFRESH-"].update(disabled=False)
+        self.window["PE/FM"].update(disabled=False)
 
     @property
     def first_input_path(self):
@@ -798,4 +813,9 @@ class GUIBase(object):
 
         show_information("\n".join(test_rec_store["K-L information statistics ----->"]), title="K-L information statistics")
         show_information("\n".join(test_rec_store["Parameters ----->"]), title="Parameter Estimation Result")
+
+    @GUI_exception
+    def _initialize_variables(self):
+
+        raise NotImplementedError("This method is to be implemented in child class")
 
