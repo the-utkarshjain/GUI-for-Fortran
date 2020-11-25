@@ -134,10 +134,10 @@ class GUIBase(object):
         self._window_size = window_size
         self._extra_argument = kwargs
         self._refreshed = False
-        self._first_input_path = "./in_1.dat" if os.path.exists("./in_1.dat") else None
-        self._second_input_path = "./in_2.dat" if os.path.exists("./in_2.dat") else None
-        self._third_input_path = "./in_3.dat" if os.path.exists("./in_3.dat") else None
-        self._exe_file_path = "./test.exe" if os.path.exists("./test.exe") else None
+        self._first_input_path = "./.tmp/in_1.dat" if os.path.exists("./.tmp/in_1.dat") else None
+        self._second_input_path = "./.tmp/in_2.dat" if os.path.exists("./.tmp/in_2.dat") else None
+        self._third_input_path = "./.tmp/in_3.dat" if os.path.exists("./.tmp/in_3.dat") else None
+        self._exe_file_path = "./.tmp/test.exe" if os.path.exists("./.tmp/test.exe") else None
         self._refresh_memory = {}
         self._thread_queue = deque()
         self._GUIKeys = {}
@@ -382,6 +382,7 @@ class GUIBase(object):
             sg.Button(button_text="PE Mode", key="PE/FM")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
                                                          sg.Tab('Dual Plot', plot3_layout),
+                                                         sg.Tab('Variable Editor', plot4_layout, visible=False),
                                                          sg.Tab('Experimental Data', plot5_layout)]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
             [sg.Output(size=(114, 5), key="-output-")]
@@ -394,7 +395,10 @@ class GUIBase(object):
     @property
     def window(self):
         if not self.is_initialized:
-            self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
+            try:
+                self._inplace_update_variable_dictionary(self._first_input_path, self._second_input_path, self._third_input_path, self._VariableDict)
+            except Exception:
+                pass
             variable_dict = self._initialize_variables()
             modes = variable_dict.keys()
             all_variables = self._VariableDict.keys()

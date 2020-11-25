@@ -182,6 +182,6 @@ class GUIModeInitializer(object):
                         except ValueError:
                             continue
                             # sg.popup_error("Oops!, values should be float, not letters {}".format(self.auto_dict[variable]))
-
+        self.window.close()
         return self.prepare_output()
 

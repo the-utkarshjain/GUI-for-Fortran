@@ -201,10 +201,14 @@ class GUIMain(GUIBase):
     @GUI_exception
     def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
         try:
+            with open(first_file_path, "r") as f:
+                file1_buffer = f.readlines()
+
             file1 = open(first_file_path, "w")
             lines = ["Mesopore seepage velocity", "Macropore seepage velocity", "Solute mass transfer rate b/w meso-micropore", "Solute mass transfer rate b/w meso-macropore", "Dispersivity", "No. of observation time steps"]
             for line in lines:
                 file1.write(variable_dictionary[line]+str("\n"))
+            file1.write("".join(file1_buffer[6:]))
         finally:
             file1.close()
 
