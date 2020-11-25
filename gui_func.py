@@ -91,11 +91,6 @@ class GUIMain(GUIBase):
                 x = float(x)
                 conc.append(x)
 
-        plt.plot(time,conc)
-        plt.xlabel('Time')
-        plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph')
-
     @classmethod
     @PlotEncapsulator
     @GUI_exception
@@ -115,11 +110,6 @@ class GUIMain(GUIBase):
                 x, y = line.split()
                 y = float(y)
                 conc.append(y)
-
-        plt.plot(time,conc)
-        plt.xlabel('Time')
-        plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph')
 
     @classmethod
     @PlotEncapsulator
@@ -142,13 +132,6 @@ class GUIMain(GUIBase):
                 x, y = float(x), float(y)
                 conc1.append(x)
                 conc2.append(y)
-
-        plt.plot(time,conc1, label='1')
-        plt.plot(time,conc2, label='2')
-        plt.xlabel('Time')
-        plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph')
-        plt.legend()
     
     @classmethod
     @GUI_exception
