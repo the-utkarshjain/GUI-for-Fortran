@@ -91,6 +91,11 @@ class GUIMain(GUIBase):
                 x = float(x)
                 conc.append(x)
 
+		plt.scatter(time,conc, marker='o',color='black')
+        plt.xlabel('Time')
+        plt.ylabel('Concentration')
+        plt.title('Concentration-Time graph')
+
     @classmethod
     @PlotEncapsulator
     @GUI_exception
@@ -110,6 +115,11 @@ class GUIMain(GUIBase):
                 x, y = line.split()
                 y = float(y)
                 conc.append(y)
+
+        plt.plot(time,conc)
+        plt.xlabel('Time')
+        plt.ylabel('Concentration')
+        plt.title('Concentration-Time graph')
 
     @classmethod
     @PlotEncapsulator
@@ -132,6 +142,13 @@ class GUIMain(GUIBase):
                 x, y = float(x), float(y)
                 conc1.append(x)
                 conc2.append(y)
+
+		plt.scatter(time,conc1, marker='o',label='1',color='black')
+        plt.plot(time,conc2, label='2')
+        plt.xlabel('Time')
+        plt.ylabel('Concentration')
+        plt.title('Concentration-Time graph')
+        plt.legend()
     
     @classmethod
     @GUI_exception
@@ -184,14 +201,10 @@ class GUIMain(GUIBase):
     @GUI_exception
     def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
         try:
-            with open(first_file_path, "r") as f:
-                file1_buffer = f.readlines()
-
             file1 = open(first_file_path, "w")
             lines = ["Mesopore seepage velocity", "Macropore seepage velocity", "Solute mass transfer rate b/w meso-micropore", "Solute mass transfer rate b/w meso-macropore", "Dispersivity", "No. of observation time steps"]
             for line in lines:
                 file1.write(variable_dictionary[line]+str("\n"))
-            file1.write("".join(file1_buffer[6:]))
         finally:
             file1.close()
 
@@ -275,24 +288,24 @@ class GUIMain(GUIBase):
                 "delta_t": None,
                 "delta_x": None,
                 "Porosity of the macropore region": None,
-                "Porosity of the mesopore region": 1e-16,
-                "Porosity of the micropore region": 1e-16,
-                "Instantaneous sorption fraction in macropore region": 1,
-                "Instantaneous sorption fraction in mesopore region": 1e-16,
-                "Instantaneous sorption fraction in micropore region": 1e-16,
-                "Fraction of sorption site available for macropore region": 1,
-                "Fraction of sorption site available for mesopore region": 1e-16,
-                "Fraction of sorption site available for immobile region": 1e-16,
+                "Porosity of the mesopore region": None,
+                "Porosity of the micropore region": None,
+                "Instantaneous sorption fraction in macropore region": None,
+                "Instantaneous sorption fraction in mesopore region": None,
+                "Instantaneous sorption fraction in micropore region": None,
+                "Fraction of sorption site available for macropore region": None,
+                "Fraction of sorption site available for mesopore region": None,
+                "Fraction of sorption site available for immobile region": None,
                 "Equilibrium sorption coefficient in macropore region": None,
-                "Equilibrium sorption coefficient in mesopore region": 1e-16,
-                "Equilibrium sorption coefficient in micropore region": 1e-16,
-                "Rate-limited sorbed coefficient in macropore region": 1e-16,
-                "Rate-limited sorbed coefficient in mesopore region": 1e-16,
-                "Rate-limited sorbed coefficient in micropore region": 1e-16,
-                "Mesopore seepage velocity": 1e-16,
+                "Equilibrium sorption coefficient in mesopore region": None,
+                "Equilibrium sorption coefficient in micropore region": None,
+                "Rate-limited sorbed coefficient in macropore region": None,
+                "Rate-limited sorbed coefficient in mesopore region": None,
+                "Rate-limited sorbed coefficient in micropore region": None,
+                "Mesopore seepage velocity": None,
                 "Macropore seepage velocity": None,
-                "Solute mass transfer rate b/w meso-micropore": 1e-16,
-                "Solute mass transfer rate b/w meso-macropore": 1e-16,
+                "Solute mass transfer rate b/w meso-micropore": None,
+                "Solute mass transfer rate b/w meso-macropore": None,
                 "Dispersivity": None,
                 "No. of observation time steps": None,
             },
@@ -307,23 +320,23 @@ class GUIMain(GUIBase):
                 "delta_t": None,
                 "delta_x": None,
                 "Porosity of the macropore region": None,
-                "Porosity of the mesopore region": 1e-16,
-                "Porosity of the micropore region": 1e-16,
+                "Porosity of the mesopore region": None,
+                "Porosity of the micropore region": None,
                 "Instantaneous sorption fraction in macropore region": None,
                 "Instantaneous sorption fraction in mesopore region": None,
-                "Instantaneous sorption fraction in micropore region": 1e-16,
+                "Instantaneous sorption fraction in micropore region": None,
                 "Fraction of sorption site available for macropore region": None,
                 "Fraction of sorption site available for mesopore region": None,
-                "Fraction of sorption site available for immobile region": 1e-16,
+                "Fraction of sorption site available for immobile region": None,
                 "Equilibrium sorption coefficient in macropore region": None,
                 "Equilibrium sorption coefficient in mesopore region": None,
                 "Equilibrium sorption coefficient in micropore region": None,
-                "Rate-limited sorbed coefficient in macropore region": 1e-16,
-                "Rate-limited sorbed coefficient in mesopore region": 1e-16,
-                "Rate-limited sorbed coefficient in micropore region": 1e-16,
-                "Mesopore seepage velocity": 1e-16,
+                "Rate-limited sorbed coefficient in macropore region": None,
+                "Rate-limited sorbed coefficient in mesopore region": None,
+                "Rate-limited sorbed coefficient in micropore region": None,
+                "Mesopore seepage velocity": None,
                 "Macropore seepage velocity": None,
-                "Solute mass transfer rate b/w meso-micropore": 1e-16,
+                "Solute mass transfer rate b/w meso-micropore": None,
                 "Solute mass transfer rate b/w meso-macropore": None,
                 "Dispersivity": None,
                 "No. of observation time steps": None,
@@ -340,22 +353,22 @@ class GUIMain(GUIBase):
                 "delta_x": None,
                 "Porosity of the macropore region": None,
                 "Porosity of the mesopore region": None,
-                "Porosity of the micropore region": 1e-16,
+                "Porosity of the micropore region": None,
                 "Instantaneous sorption fraction in macropore region": None,
                 "Instantaneous sorption fraction in mesopore region": None,
-                "Instantaneous sorption fraction in micropore region": 1e-16,
+                "Instantaneous sorption fraction in micropore region": None,
                 "Fraction of sorption site available for macropore region": None,
                 "Fraction of sorption site available for mesopore region": None,
-                "Fraction of sorption site available for immobile region": 1e-16,
+                "Fraction of sorption site available for immobile region": None,
                 "Equilibrium sorption coefficient in macropore region": None,
                 "Equilibrium sorption coefficient in mesopore region": None,
-                "Equilibrium sorption coefficient in micropore region": 1e-16,
+                "Equilibrium sorption coefficient in micropore region": None,
                 "Rate-limited sorbed coefficient in macropore region": None,
                 "Rate-limited sorbed coefficient in mesopore region": None,
                 "Rate-limited sorbed coefficient in micropore region": None,
                 "Mesopore seepage velocity": None,
                 "Macropore seepage velocity": None,
-                "Solute mass transfer rate b/w meso-micropore": 1e-16,
+                "Solute mass transfer rate b/w meso-micropore": None,
                 "Solute mass transfer rate b/w meso-macropore": None,
                 "Dispersivity": None,
                 "No. of observation time steps": None,
@@ -372,22 +385,22 @@ class GUIMain(GUIBase):
                 "delta_x": None,
                 "Porosity of the macropore region": None,
                 "Porosity of the mesopore region": None,
-                "Porosity of the micropore region": 1e-16,
-                "Instantaneous sorption fraction in macropore region": 1e-16,
-                "Instantaneous sorption fraction in mesopore region": 1e-16,
-                "Instantaneous sorption fraction in micropore region": 1e-16,
-                "Fraction of sorption site available for macropore region": 1e-16,
-                "Fraction of sorption site available for mesopore region": 1e-16,
-                "Fraction of sorption site available for immobile region": 1e-16,
-                "Equilibrium sorption coefficient in macropore region": 1e-16,
-                "Equilibrium sorption coefficient in mesopore region": 1e-16,
-                "Equilibrium sorption coefficient in micropore region": 1e-16,
-                "Rate-limited sorbed coefficient in macropore region": 1e-16,
-                "Rate-limited sorbed coefficient in mesopore region": 1e-16,
-                "Rate-limited sorbed coefficient in micropore region": 1e-16,
+                "Porosity of the micropore region": None,
+                "Instantaneous sorption fraction in macropore region": None,
+                "Instantaneous sorption fraction in mesopore region": None,
+                "Instantaneous sorption fraction in micropore region": None,
+                "Fraction of sorption site available for macropore region": None,
+                "Fraction of sorption site available for mesopore region": None,
+                "Fraction of sorption site available for immobile region": None,
+                "Equilibrium sorption coefficient in macropore region": None,
+                "Equilibrium sorption coefficient in mesopore region": None,
+                "Equilibrium sorption coefficient in micropore region": None,
+                "Rate-limited sorbed coefficient in macropore region": None,
+                "Rate-limited sorbed coefficient in mesopore region": None,
+                "Rate-limited sorbed coefficient in micropore region": None,
                 "Mesopore seepage velocity": None,
                 "Macropore seepage velocity": None,
-                "Solute mass transfer rate b/w meso-micropore": 1e-16,
+                "Solute mass transfer rate b/w meso-micropore": None,
                 "Solute mass transfer rate b/w meso-macropore": None,
                 "Dispersivity": None,
                 "No. of observation time steps": None,
