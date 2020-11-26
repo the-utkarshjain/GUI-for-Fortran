@@ -374,10 +374,10 @@ class GUIBase(object):
 
         layout = [
             [sg.Text('Plotter GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
-            [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.FileBrowse(button_text="File1 Browse", key="File1 Browse", visible=False),
-            sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse", visible=False),
-            sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse", visible=False),
-            sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse", visible=False),
+            [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.FileBrowse(button_text="File1 Browse", key="File1 Browse"),
+            sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse"),
+            sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse"),
+            sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse"),
             sg.Button(button_text="Run / Refresh", key="-REFRESH-"),
             sg.Button(button_text="PE Mode", key="PE/FM")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
