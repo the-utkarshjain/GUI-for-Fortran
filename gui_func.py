@@ -30,6 +30,7 @@ import hashlib
 import random
 import subprocess
 from copy import deepcopy
+import math
 
 class GUIMain(GUIBase):
 
@@ -91,7 +92,7 @@ class GUIMain(GUIBase):
                 x = float(x)
                 conc.append(x)
 
-		plt.scatter(time,conc, marker='o',color='black')
+        plt.scatter(time,conc, marker='o', color='black')
         plt.xlabel('Time')
         plt.ylabel('Concentration')
         plt.title('Concentration-Time graph')
@@ -143,7 +144,7 @@ class GUIMain(GUIBase):
                 conc1.append(x)
                 conc2.append(y)
 
-		plt.scatter(time,conc1, marker='o',label='1',color='black')
+        plt.scatter(time,conc1, marker='o',label='1',color='black')
         plt.plot(time,conc2, label='2')
         plt.xlabel('Time')
         plt.ylabel('Concentration')
@@ -201,10 +202,13 @@ class GUIMain(GUIBase):
     @GUI_exception
     def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
         try:
+            with open(first_file_path, "r") as f:
+                temp = f.readlines()
             file1 = open(first_file_path, "w")
             lines = ["Mesopore seepage velocity", "Macropore seepage velocity", "Solute mass transfer rate b/w meso-micropore", "Solute mass transfer rate b/w meso-macropore", "Dispersivity", "No. of observation time steps"]
             for line in lines:
                 file1.write(variable_dictionary[line]+str("\n"))
+            file1.write("".join(temp[6:]))
         finally:
             file1.close()
 
@@ -224,12 +228,12 @@ class GUIMain(GUIBase):
             file3.write(variable_dictionary[lines[-1]]+str("\n"))
             lines = ["Instantaneous sorption fraction in macropore region", "Instantaneous sorption fraction in mesopore region", "Instantaneous sorption fraction in micropore region", "Fraction of sorption site available for macropore region", "Fraction of sorption site available for mesopore region", "Fraction of sorption site available for immobile region"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary[line]+str(" "))
-            file3.write(variable_dictionary[lines[-1]]+str("\n"))
+                file3.write(str(math.floor(float(variable_dictionary[line])))+str(" "))
+            file3.write(str(math.floor(float(variable_dictionary[lines[-1]])))+str("\n"))
             lines = ["Equilibrium sorption coefficient in macropore region", "Equilibrium sorption coefficient in mesopore region", "Equilibrium sorption coefficient in micropore region", "Rate-limited sorbed coefficient in macropore region", "Rate-limited sorbed coefficient in mesopore region", "Rate-limited sorbed coefficient in micropore region"]
             for line in lines[:-1]:
-                file3.write(variable_dictionary[line]+str(" "))
-            file3.write(variable_dictionary[lines[-1]]+str("\n"))
+                file3.write(str(math.floor(float(variable_dictionary[line])))+str(" "))
+            file3.write(str(math.floor(float(variable_dictionary[lines[-1]])))+str("\n"))
         finally:
             file3.close()
 

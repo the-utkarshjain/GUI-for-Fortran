@@ -134,16 +134,16 @@ class GUIBase(object):
         self._window_size = window_size
         self._extra_argument = kwargs
         self._refreshed = False
-        self._first_input_path = "./.tmp/in_1.dat" if os.path.exists("./.tmp/in_1.dat") else None
-        self._second_input_path = "./.tmp/in_2.dat" if os.path.exists("./.tmp/in_2.dat") else None
-        self._third_input_path = "./.tmp/in_3.dat" if os.path.exists("./.tmp/in_3.dat") else None
-        self._exe_file_path = "./.tmp/test.exe" if os.path.exists("./.tmp/test.exe") else None
+        self._first_input_path = "./in_1.dat" if os.path.exists("./in_1.dat") else None
+        self._second_input_path = "./in_2.dat" if os.path.exists("./in_2.dat") else None
+        self._third_input_path = "./in_3.dat" if os.path.exists("./in_3.dat") else None
+        self._exe_file_path = "./test.exe" if os.path.exists("./test.exe") else None
         self._refresh_memory = {}
         self._thread_queue = deque()
         self._GUIKeys = {}
         self._window = None
         self._rendered_layout = None
-        # sg.theme(theme)
+        sg.theme(theme)
         self.WIN_CLOSED = sg.WIN_CLOSED
         self.PopupAnimated = sg.PopupAnimated
         self.DEFAULT_BASE64_LOADING_GIF = sg.DEFAULT_BASE64_LOADING_GIF
@@ -374,10 +374,10 @@ class GUIBase(object):
 
         layout = [
             [sg.Text('Plotter GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
-            [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.FileBrowse(button_text="File1 Browse", key="File1 Browse"),
-            sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse"),
-            sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse"),
-            sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse"),
+            [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.FileBrowse(button_text="File1 Browse", key="File1 Browse", visible=False),
+            sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse", visible=False),
+            sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse", visible=False),
+            sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse", visible=False),
             sg.Button(button_text="Run / Refresh", key="-REFRESH-"),
             sg.Button(button_text="PE Mode", key="PE/FM")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
@@ -385,7 +385,7 @@ class GUIBase(object):
                                                          sg.Tab('Variable Editor', plot4_layout, visible=False),
                                                          sg.Tab('Experimental Data', plot5_layout)]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
-            [sg.Output(size=(114, 5), key="-output-")]
+            # [sg.Output(size=(114, 5), key="-output-")]
 
         ]
 
@@ -579,6 +579,7 @@ class GUIBase(object):
                 self.window[table_key].update(values=self._base_value)
                 to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
                 self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
+                self._write_updated_values(self.first_file_path, self.second_file_path, self.third_file_path, self._VariableDict)
 
         if table_key == "-TIMESTAMP-TABLE-":
             new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
@@ -618,6 +619,7 @@ class GUIBase(object):
             to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
             self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
             self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
+            self._write_updated_values(self.first_file_path, self.second_file_path, self.third_file_path, self._VariableDict)
 
 
         if section_key == "-TIMESTAMP-COPY-":
@@ -698,6 +700,8 @@ class GUIBase(object):
 
         process = subprocess.Popen("tempchek.exe in_1.tpl", shell=True, stdout=subprocess.PIPE)
         process_out = "{}".format(process.stdout.read().decode("utf-8"))
+        print(">>> [INFO] Running tempchek")
+        print(process_out)
 
         if "No errors encountered" in process_out:
             print("Executed Successfully")
@@ -711,7 +715,8 @@ class GUIBase(object):
         
         process = subprocess.Popen("tempchek.exe in_1.tpl in_1.dat in_1.par", shell=True, stdout=subprocess.PIPE)
         process_out = "{}".format(process.stdout.read().decode("utf-8"))
-        # print(process_out)
+        print(">>> [INFO] Running tempchek again")
+        print(process_out)
 
         with open("output.ins", "w") as f:
             f.write("pif #\n")
@@ -720,7 +725,8 @@ class GUIBase(object):
 
         process = subprocess.Popen("inschek.exe output.ins output.dat", shell=True, stdout=subprocess.PIPE)
         process_out = "{}".format(process.stdout.read().decode("utf-8"))
-        # print(process_out)
+        print(">>> [INFO] Running inschek")
+        print(process_out)
 
         with open("measure.obf", "w") as f:
             to_write = map(lambda x: "o{} {}".format(x[0], x[1]), self._base_value)
@@ -728,7 +734,9 @@ class GUIBase(object):
 
         process = subprocess.Popen("pestgen.exe test in_1.par measure.obf", shell=True, stdout=subprocess.PIPE)
         process_out = "{}".format(process.stdout.read().decode("utf-8"))
-        # print(process_out)
+        print(">>> [INFO] Running pestgen")
+        print(process_out)
+        
 
         test_pst = ""
 
@@ -772,12 +780,15 @@ class GUIBase(object):
 
         process = subprocess.Popen("pestchek.exe test", shell=True, stdout=subprocess.PIPE)
         process_out = "{}".format(process.stdout.read().decode("utf-8"))
-        # print(process_out)
+        print(">>> [INFO] Running pestchek")
+        print(process_out)
         
         def pest_process(obj):
             obj.processing = True
             process = subprocess.Popen("pest.exe test", shell=True, stdout=subprocess.PIPE)
             process_out = "{}".format(process.stdout.read().decode("utf-8"))
+            print(">>> [INFO] Running pest")
+            print(process_out)
             # print(process_out)
             obj.processing = False
 
@@ -815,8 +826,11 @@ class GUIBase(object):
             window = sg.Window(title=title, layout=layout)
             events, values = window.read(close=True)
 
-        show_information("\n".join(test_rec_store["K-L information statistics ----->"]), title="K-L information statistics")
-        show_information("\n".join(test_rec_store["Parameters ----->"]), title="Parameter Estimation Result")
+        if not test_rec_store["K-L information statistics ----->"] or not test_rec_store["Parameters ----->"]:
+            sg.popup_error("Some error occurred, please check logs for more info\n")
+        else:
+            show_information("\n".join(test_rec_store["K-L information statistics ----->"]), title="K-L information statistics")
+            show_information("\n".join(test_rec_store["Parameters ----->"]), title="Parameter Estimation Result")
 
     @GUI_exception
     def _initialize_variables(self):

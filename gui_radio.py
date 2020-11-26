@@ -90,6 +90,8 @@ class GUILimitSetter(object):
 
         self.window.close()
         return self.variable_state
+
+
 class GUIModeInitializer(object):
 
     def __init__(self, modes, all_variables, variables_dict, auto_dict=None):
@@ -129,7 +131,7 @@ class GUIModeInitializer(object):
         for variable in self.variables_dict[self.global_mode]:
             if self.variables_dict[self.global_mode][variable] is None:
                 self.window[variable].update(visible=True)
-                self.window["value_" + variable].update(visible=True, disabled=False, value="")
+                self.window["value_" + variable].update(visible=True, disabled=False, value="", text_color="black")
             else:
                 self.window[variable].update(visible=True)
                 self.window["value_" + variable].update(visible=True, disabled=True, value=str(self.variables_dict[self.global_mode][variable]), text_color="green")
@@ -166,7 +168,7 @@ class GUIModeInitializer(object):
                 self.trigger_variables()
             if "value_" in events:
                 try:
-                    self.variables_store[events.replace("_", "")] = float(values[events])
+                    self.variables_store["_".join(events.split("_")[1:])] = float(values[events])
                 except ValueError:
                     sg.popup_error("Oops!, values should be float, not letters")
                 continue

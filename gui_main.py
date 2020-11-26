@@ -26,7 +26,7 @@ from gui_func import GUIMain
 if __name__ == "__main__":
 
     GUI = GUIMain(window_size=(800, 700), title="GUI", auto_size_buttons=False, 
-            auto_size_text=False, finalize=True, element_justification='center', resizable=True, theme="Dark")
+            auto_size_text=False, finalize=True, element_justification='center', theme="DefaultNoMoreNagging")
 
     while True:
         event, values = GUI.window.read(timeout=50)
