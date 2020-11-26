@@ -578,6 +578,7 @@ class GUIBase(object):
                 self._base_value[row_value][1] = float(new_val)
                 self.window[table_key].update(values=self._base_value)
                 to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
+                self._VariableDict["No. of observation time steps"] = str(len(self._base_value))
                 self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
                 self._write_updated_values(self.first_file_path, self.second_file_path, self.third_file_path, self._VariableDict)
 
