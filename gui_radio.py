@@ -96,19 +96,19 @@ class GUIModeInitializer(object):
 
     def __init__(self, modes, all_variables, variables_dict, auto_dict=None):
 
-        variables_dict["Generic"] = {variable: None for variable in all_variables}
-        if not "Generic" in modes:
-            modes.append("Generic")
+        variables_dict["TPNE"] = {variable: None for variable in all_variables}
+        if not "TPNE" in modes:
+            modes.append("TPNE")
         self.modes = modes
         self.all_variables = all_variables
         self.variables_dict = variables_dict
         self.variables_store = defaultdict(lambda: None)
-        self.global_mode = "Generic"
+        self.global_mode = "TPNE"
         self.selected_color = ('red', 'white')
         self.auto_dict = auto_dict
         self.layout = [
             [sg.Column(layout=[[sg.Text("Select Mode and Initialize Variables", font=("Helvetica", 16))]], element_justification="center", expand_x=True)],
-            [sg.Column(layout=[[sg.Button(mode, key=mode, button_color=self.selected_color if mode == "Generic" else None) for mode in modes]], element_justification="center", expand_x=True)],
+            [sg.Column(layout=[[sg.Button(mode, key=mode, button_color=self.selected_color if mode == "TPNE" else None) for mode in modes]], element_justification="center", expand_x=True)],
             [sg.Column(
             layout = [
                 [sg.Column(layout=[[sg.Text(variable, visible=True, key=variable)] for variable in all_variables]),

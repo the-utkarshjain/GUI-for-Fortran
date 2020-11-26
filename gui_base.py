@@ -236,7 +236,7 @@ class GUIBase(object):
                     [sg.Text("Base Values", justification="center")],
                     [sg.Table(values=self._base_value, headings=["S.No", "Current Value"],
                         col_widths=90, justification='left', font=("Helvetica 10 bold"),
-                        num_rows=8, key="-BASE-VALUE-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="black", enable_events=True)],
+                        num_rows=8, key="-BASE-VALUE-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="lightblue", enable_events=True)],
                     [sg.Button("Import Data", enable_events=True, key="-BASE-COPY-", auto_size_button=True)]],
                         element_justification="center"
             ), 
@@ -247,7 +247,7 @@ class GUIBase(object):
                         [sg.Text("Timestamp Values", justification="center")],
                         [sg.Table(values=self._timestamp_value, headings=["S.No", "Current Value"],
                         col_widths=90, justification='left', font=("Helvetica 10 bold"),
-                        num_rows=8, key="-TIMESTAMP-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="black", enable_events=True)],
+                        num_rows=8, key="-TIMESTAMP-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="lightblue", enable_events=True)],
                         [sg.Button("Import Data", enable_events=True, key="-TIMESTAMP-COPY-", auto_size_button=True)]
                 ],
                 element_justification="center"
