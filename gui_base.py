@@ -373,7 +373,7 @@ class GUIBase(object):
         plot5_layout = self._create_editable_table_tab()
 
         layout = [
-            [sg.Text('Plotter GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
+            [sg.Text('Plotter/Optimiser GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
             [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.FileBrowse(button_text="File1 Browse", key="File1 Browse"),
             sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse"),
             sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse"),
@@ -385,7 +385,7 @@ class GUIBase(object):
                                                          sg.Tab('Variable Editor', plot4_layout, visible=False),
                                                          sg.Tab('Experimental Data', plot5_layout)]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
-            # [sg.Output(size=(114, 5), key="-output-")]
+            [sg.Output(size=(114, 10), key="-output-")]
 
         ]
 
