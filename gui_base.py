@@ -374,10 +374,10 @@ class GUIBase(object):
 
         layout = [
             [sg.Text('Plotter/Optimiser GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
-            [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.FileBrowse(button_text="File1 Browse", key="File1 Browse"),
-            sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.FileBrowse(button_text="File2 Browse", key="File2 Browse"),
-            sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.FileBrowse(button_text="File3 Browse", key="File3 Browse"),
-            sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.FileBrowse(button_text="EXE Browse", key="EXE Browse"),
+            [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.B(button_text="File1 Browse", key="File1 Browse", visible=False),
+            sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.B(button_text="File2 Browse", key="File2 Browse", visible=False),
+            sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.B(button_text="File3 Browse", key="File3 Browse", visible=False),
+            sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.B(button_text="EXE Browse", key="EXE Browse", visible=False),
             sg.Button(button_text="Run / Refresh", key="-REFRESH-"),
             sg.Button(button_text="PE Mode", key="PE/FM")],
             [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
@@ -580,7 +580,7 @@ class GUIBase(object):
                 to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
                 self._VariableDict["No. of observation time steps"] = str(len(self._base_value))
                 self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
-                self._write_updated_values(self.first_file_path, self.second_file_path, self.third_file_path, self._VariableDict)
+                self._write_updated_values(self.first_input_path, self.second_input_path, self.third_input_path, self._VariableDict)
 
         if table_key == "-TIMESTAMP-TABLE-":
             new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
@@ -621,7 +621,7 @@ class GUIBase(object):
             self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
             self._VariableDict["No. of observation time steps"] = str(len(self._base_value))
             self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
-            self._write_updated_values(self.first_file_path, self.second_file_path, self.third_file_path, self._VariableDict)
+            self._write_updated_values(self.first_input_path, self.second_input_path, self.third_input_path, self._VariableDict)
 
 
         if section_key == "-TIMESTAMP-COPY-":
