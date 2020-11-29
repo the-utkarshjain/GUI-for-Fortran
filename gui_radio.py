@@ -24,10 +24,14 @@ class GUIVariableSetter(object):
         self.window = sg.Window(title="Variable Setter", layout=self.layout, use_default_focus=False)
 
     def run(self):
+
         while True:
             event, values = self.window.read()
             if event in [sg.WINDOW_CLOSED, "exit"]:
                 if None in self.variable_status.values():
+                    if event == sg.WINDOW_CLOSED:
+                        self.window.close()
+                        return None
                     sg.popup_error("You have to supply input for every variable")
                     continue
                 break
@@ -37,7 +41,7 @@ class GUIVariableSetter(object):
                     try:
                         self.variable_status[base] = float(values[event])
                     except ValueError:
-                        sg.popup_error("Oops!, values should be float, not letters")
+                        print(" >>> [ERROR] Oops!, values should be float, not letters")
                     continue
                 self.window["determined_{}".format(base)].update(button_color=sg.theme_button_color())
                 self.window["guess_{}".format(base)].update(button_color=sg.theme_button_color())
@@ -76,6 +80,9 @@ class GUILimitSetter(object):
         while True:
             events, values = self.window.read()
             if events in [sg.WINDOW_CLOSED, "exit"]:
+                if events == sg.WINDOW_CLOSED:
+                    self.window.close()
+                    return None
                 for key in self.variable_state:
                     if self.variable_state[key]["lower"] is None or self.variable_state[key]["upper"] is None:
                         sg.popup_error("You have to supply input for every variable")
@@ -87,13 +94,13 @@ class GUILimitSetter(object):
                     try:
                         self.variable_state[base]["lower"] = str(float(values[events]))
                     except ValueError:
-                        sg.popup_error("Oops!, values should be float, not letters")
+                        print(" >>> [ERROR] Oops!, values should be float, not letters")
                     continue
                 if prefix == "upper":
                     try:
                         self.variable_state[base]["upper"] = str(float(values[events]))
                     except ValueError:
-                        sg.popup_error("Oops!, values should be float, not letters")
+                        print(" >>> [ERROR] Oops!, values should be float, not letters")
                     continue
 
         self.window.close()

@@ -688,6 +688,9 @@ class GUIBase(object):
 
         ve = GUIVariableSetter(variable_name)
         variable_state = ve.run()
+        if variable_state is None:
+        	print(">>> PE Mode was cancelled")
+        	return None
 
         with open("in_1.tpl", "w") as f:
             f.write("ptf #\n")
@@ -762,6 +765,11 @@ class GUIBase(object):
 
         bound_gui = GUILimitSetter(variable_name)
         variable_state = bound_gui.run()
+
+        if variable_state is None:
+        	print(">>> PE Mode was cancelled")
+        	return None
+
 
         for idx, ln in enumerate(test_pst_store["* parameter data"]):
             line = ln.split()
