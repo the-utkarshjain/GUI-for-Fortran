@@ -16,7 +16,7 @@ The repository for the final project in CS308-Large Applications Practicum. GUI 
 **NOTE:** This application is meant to run only on windows. No other OS is supported.
 1. Clone this repo: `git clone https://github.com/the-utkarshjain/GUI-for-Fortran.git`
 2. Navigate to **GUI-for-Fortran** folder in your terminal.
-3. Run: `pip install requirements.txt`
+3. Run: `pip install -r requirements.txt`
 3. Run: `python gui_main.py` (python version >= 3.7)
 4. The application window will appear on the screen.
 
