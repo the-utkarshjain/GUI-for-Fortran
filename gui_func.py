@@ -33,13 +33,20 @@ from copy import deepcopy
 import math
 
 class GUIMain(GUIBase):
-
+    r'''
+    Primary class to be used for
+    implementation.
+    '''
     def __init__(self, *args, **kwargs):
         super(GUIMain, self).__init__(*args, **kwargs)
 
     @classmethod
     @GUI_exception
     def _refresh_utility(cls, first_file_path: str, second_file_path: str, third_file_path: str, memory: dict) -> bool:
+        r'''
+        Function to check if any input file is changed/updated
+        and run the executable in case files are changed/updated.
+        '''
         isupdates = False
         checksum_file_1 = hashlib.sha256(open(first_file_path, 'r').read().encode('utf-8')).hexdigest()
         checksum_file_2 = hashlib.sha256(open(second_file_path, 'r').read().encode('utf-8')).hexdigest()
@@ -65,6 +72,10 @@ class GUIMain(GUIBase):
     @classmethod
     @GUI_exception
     def _nonblocking_execute_external_code(cls, exe_file_path: str, thread_queue: list):
+        r'''
+        Function to execute the fortran
+        executable and generate output file.
+        '''
         def target_func(x):
             return subprocess.call([x])
 
@@ -76,6 +87,10 @@ class GUIMain(GUIBase):
     @PlotEncapsulator
     @GUI_exception
     def _plot_first_2D_data(cls, output_file_path: str, time_file_path: str):
+        r'''
+        Function to plot experimental data
+        with reespect to timestamp.
+        '''
         time = []
         conc = []
 
@@ -101,6 +116,10 @@ class GUIMain(GUIBase):
     @PlotEncapsulator
     @GUI_exception
     def _plot_second_2D_data(cls, output_file_path: str, time_file_path: str):
+        r'''
+        Function to plot simulation data
+        with reespect to timestamp.
+        '''
         time = []
         conc = []
 
@@ -126,6 +145,10 @@ class GUIMain(GUIBase):
     @PlotEncapsulator
     @GUI_exception
     def _plot_both_2D_data(cls, output_file_path: str, time_file_path: str):
+        r'''
+        Function to plot simulation and experimental data
+        on same canvas.
+        '''
         time = []
         conc1 = []
         conc2=[]
@@ -154,6 +177,10 @@ class GUIMain(GUIBase):
     @classmethod
     @GUI_exception
     def _inplace_update_variable_dictionary(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:        
+        r'''
+        Function to update variable dictionary in place 
+        using the manually entered values
+        '''
         try:
             file1 = open(first_file_path, "r")
             variable_dictionary["Mesopore seepage velocity"] = file1.readline().strip()
@@ -201,6 +228,10 @@ class GUIMain(GUIBase):
     @classmethod
     @GUI_exception
     def _write_updated_values(cls, first_file_path: str, second_file_path: str, third_file_path: str, variable_dictionary: dict) -> None:
+        r'''
+        Function to update values (manually entered by user)
+        in the files from the variable dictionary.
+        '''
         try:
             with open(first_file_path, "r") as f:
                 temp = f.readlines()
@@ -240,6 +271,10 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _export_timestamps_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
+        r'''
+        Function to export timestamp data
+        to an external file.
+        '''
         time_series_copy = map(lambda x: str(x), time_series)
         as_string = "\n".join(time_series_copy)
 
@@ -248,6 +283,10 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _import_timestamps_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+        r'''
+        Function to import time-stamp data
+        manually.
+        '''
         try:
             file2 = open(second_file_path, "r")
             skip = int(file2.readline())
@@ -261,6 +300,10 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _export_concentration_data(self, time_series: list, first_file_path: str, second_file_path: str, third_file_path: str) -> None:
+        r'''
+        Function to export concentration data
+        to an external file.
+        '''
         time_series_copy = map(lambda x: str(x), time_series)
         as_string = "\n".join(time_series_copy)
 
@@ -269,6 +312,10 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _import_concentration_data(self, first_file_path: str, second_file_path: str, third_file_path: str) -> list:
+        r'''
+        Function to import concentration data
+        manually.
+        '''
         try:
             file1 = open(first_file_path, "r")
             for i in range(6):
@@ -281,7 +328,10 @@ class GUIMain(GUIBase):
 
     @GUI_exception
     def _initialize_variables(self):
-
+        r'''
+        Function to initialise variables in accordance with 
+        the modes as suggested in first feedback.
+        '''
         return {
             "ADE": {
                 "nz": None,
