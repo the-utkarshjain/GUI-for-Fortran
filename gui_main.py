@@ -19,7 +19,10 @@
     * Om Pandey`
 
 """
-
+r'''
+Customary main.py 
+to run the GUI, uses GUIMain class from gui_func.py
+'''
 from gui_func import GUIMain
 
 
