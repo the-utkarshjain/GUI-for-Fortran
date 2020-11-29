@@ -3,7 +3,11 @@ from copy import deepcopy
 from collections import defaultdict
 
 class GUIVariableSetter(object):
-
+    r'''
+    Class to select parameters as determined 
+    or guessed and add initial guess for undetermined
+    parameters during parameter estimation.
+    '''
     def __init__(self, variable_name):
         self.variable_name = variable_name
         self.variable_status = {x: None for x in variable_name}
@@ -48,7 +52,11 @@ class GUIVariableSetter(object):
         return self.variable_status
     
 class GUILimitSetter(object):
-
+    r'''
+    Class to set upper and lower limits
+    for undetermined parameters
+    during parameter estimation.
+    '''
     def __init__(self, variable_dict):
         variable_name = variable_dict.keys()
 
@@ -93,7 +101,12 @@ class GUILimitSetter(object):
 
 
 class GUIModeInitializer(object):
-
+    r'''
+    Class to initialise mode to TPNE
+    and lock respective variables to their 
+    default value if any other mode is
+    selected.
+    '''
     def __init__(self, modes, all_variables, variables_dict, auto_dict=None):
 
         variables_dict["TPNE"] = {variable: None for variable in all_variables}
