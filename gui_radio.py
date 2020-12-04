@@ -202,4 +202,4 @@ class GUIModeInitializer(object):
                             continue
                             # sg.popup_error("Oops!, values should be float, not letters {}".format(self.auto_dict[variable]))
         self.window.close()
-        return self.prepare_output()
+        return self.prepare_output(), self.global_mode

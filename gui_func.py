@@ -83,10 +83,10 @@ class GUIMain(GUIBase):
         thread_queue.append(t)
         t.start()
 
-    @classmethod
+
     @PlotEncapsulator
     @GUI_exception
-    def _plot_first_2D_data(cls, output_file_path: str, time_file_path: str):
+    def _plot_first_2D_data(self, output_file_path: str, time_file_path: str):
         r'''
         Function to plot experimental data
         with reespect to timestamp.
@@ -110,12 +110,12 @@ class GUIMain(GUIBase):
         plt.scatter(time,conc, marker='o', color='black')
         plt.xlabel('Time')
         plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph')
+        plt.title('Concentration-Time graph [ {} ]'.format(self.mode))
 
-    @classmethod
+
     @PlotEncapsulator
     @GUI_exception
-    def _plot_second_2D_data(cls, output_file_path: str, time_file_path: str):
+    def _plot_second_2D_data(self, output_file_path: str, time_file_path: str):
         r'''
         Function to plot simulation data
         with reespect to timestamp.
@@ -139,7 +139,7 @@ class GUIMain(GUIBase):
         plt.plot(time,conc)
         plt.xlabel('Time')
         plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph')
+        plt.title('Concentration-Time graph [ {} ]'.format(self.mode))
 
     @classmethod
     @PlotEncapsulator
@@ -171,7 +171,7 @@ class GUIMain(GUIBase):
         plt.plot(time,conc2, label='2')
         plt.xlabel('Time')
         plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph')
+        plt.title('Concentration-Time graph [ {} ]'.format(self.mode)')
         plt.legend()
     
     @classmethod

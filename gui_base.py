@@ -182,6 +182,7 @@ class GUIBase(object):
         self.is_initialized = False
         self._base_value = [[idx, "NA"] for idx in range(1, 43)] 
         self._timestamp_value = [[idx, "NA"] for idx in range(1, 43)]
+        self.mode = None
 
         if not os.path.exists("./.tmp"):
             os.mkdir("./.tmp")
@@ -395,7 +396,8 @@ class GUIBase(object):
             modes = variable_dict.keys()
             all_variables = self._VariableDict.keys()
             initializer = GUIModeInitializer(modes, all_variables, variable_dict, auto_dict=self._VariableDict)
-            result = initializer.run()
+            result, mode = initializer.run()
+            self.mode = mode
             if result == None:
                 raise SystemExit("GUI operation terminated")
             self._VariableDict = result
@@ -578,14 +580,6 @@ class GUIBase(object):
                 self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
                 self._write_updated_values(self.first_input_path, self.second_input_path, self.third_input_path, self._VariableDict)
 
-        # if table_key == "-TIMESTAMP-TABLE-":
-        #     new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
-        #     if new_val:
-        #         row_value = int(row_value)
-        #         self._timestamp_value[row_value][1] = float(new_val)
-        #         self.window[table_key].update(values=self._timestamp_value)
-        #         to_save = [1, 16.87] + list(map(lambda x: x[1], self._timestamp_value))
-        #         self._export_timestamps_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
 
     def _new_window_for_copy_paste(self):
         layout = [[sg.Text('< Data Importer >', font=('Consolas', 10), size=(90, 1), key='_INFO_', justification="left")],
