@@ -136,7 +136,7 @@ class GUIModeInitializer(object):
                 sg.Column(layout=[[sg.In(visible=True, key="value_" + variable, enable_events=True)] for variable in all_variables])]
             ], scrollable=True, vertical_scroll_only=True, expand_x=True
             )],
-            [sg.Column(layout=[[sg.Button("Next", key="exit"), sg.Button("Fill Automatically", key="auto")]], element_justification="center", expand_x=True)]
+            [sg.Column(layout=[[sg.Button("Next", key="exit"), sg.Button("Fill Automatically", key="auto", visible=True)]], element_justification="center", expand_x=True)]
         ]
 
         self.window = sg.Window(title="Initializer", layout=self.layout, use_default_focus=False)

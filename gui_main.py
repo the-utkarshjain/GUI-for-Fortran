@@ -25,11 +25,11 @@ to run the GUI, uses GUIMain class from gui_func.py
 '''
 from gui_func import GUIMain
 
-
-if __name__ == "__main__":
-
+def main_loop():
+    
     GUI = GUIMain(window_size=(800, 700), title="GUI", auto_size_buttons=False, 
             auto_size_text=False, finalize=True, element_justification='center', theme="DefaultNoMoreNagging")
+    flag = False
 
     while True:
         event, values = GUI.window.read(timeout=50)
@@ -72,6 +72,9 @@ if __name__ == "__main__":
             if values[event]:
                 GUI.update_variable(values[event][0])
 
+        if event == 'mode-select':
+            flag = True
+            break
 
         if GUI.is_processing:
             GUI.PopupAnimated(GUI.DEFAULT_BASE64_LOADING_GIF, background_color='green', transparent_color='green')
@@ -79,11 +82,16 @@ if __name__ == "__main__":
         else:
             GUI.PopupAnimated(None)
             GUI.unfreeze_buttons()
-    
-        if event in ("-BASE-VALUE-TABLE-", "-TIMESTAMP-TABLE-"):
-            GUI.edit_table_cells(event, values[event][0])
 
         if event in ("-TIMESTAMP-COPY-", "-BASE-COPY-"):
             GUI.import_data(event)
-
+        
     GUI.window.close()
+    if flag:
+        del GUI
+        main_loop()
+
+
+if __name__ == "__main__":
+
+    main_loop()

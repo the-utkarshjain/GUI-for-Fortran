@@ -230,27 +230,16 @@ class GUIBase(object):
 
 
     def _create_editable_table_tab(self):
+        table_data = [[x[0], y[1], x[1]] for x, y in zip(self._base_value, self._timestamp_value)]
         tab_layout = [[
             sg.Column(
                 layout=[
-                    [sg.Text("Base Values", justification="center")],
-                    [sg.Table(values=self._base_value, headings=["S.No", "Current Value"],
-                        col_widths=90, justification='left', font=("Helvetica 10 bold"),
-                        num_rows=8, key="-BASE-VALUE-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="lightblue", enable_events=True)],
-                    [sg.Button("Import Data", enable_events=True, key="-BASE-COPY-", auto_size_button=True)]],
-                        element_justification="center"
-            ), 
-            sg.VSeperator(),
-            sg.Column(
-                layout=
-                    [
-                        [sg.Text("Timestamp Values", justification="center")],
-                        [sg.Table(values=self._timestamp_value, headings=["S.No", "Current Value"],
-                        col_widths=90, justification='left', font=("Helvetica 10 bold"),
-                        num_rows=8, key="-TIMESTAMP-TABLE-", row_height=42, vertical_scroll_only=True, alternating_row_color="lightblue", enable_events=True)],
-                        [sg.Button("Import Data", enable_events=True, key="-TIMESTAMP-COPY-", auto_size_button=True)]
-                ],
-                element_justification="center"
+                    [sg.Table(values=table_data, headings=["S.No", "Time", "Concentration"], size=(800, 500),
+                        justification='left', font=("Helvetica 10 bold"), row_height=50, col_widths=50,
+                        num_rows=7, key="-BASE-VALUE-TABLE-", vertical_scroll_only=True, alternating_row_color="lightblue", enable_events=True)],
+                    [sg.Button("Import Time", enable_events=True, key="-TIMESTAMP-COPY-", auto_size_button=True),
+                    sg.Button("Import Concentration", enable_events=True, key="-BASE-COPY-", auto_size_button=True),]],
+                        element_justification="center", expand_x=True, expand_y=True
             )
             ]
         ]
@@ -373,17 +362,20 @@ class GUIBase(object):
         plot5_layout = self._create_editable_table_tab()
 
         layout = [
-            [sg.Text('Plotter/Optimiser GUI', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
+            [sg.Text('Triple Porosity Dual Permeability Three Site Interface', justification='center', size=(50, 1), font=("Helvetica 20 bold"))],
             [sg.Input(key='-FILE1-', visible=False, enable_events=True), sg.B(button_text="File1 Browse", key="File1 Browse", visible=False),
             sg.Input(key='-FILE2-', visible=False, enable_events=True), sg.B(button_text="File2 Browse", key="File2 Browse", visible=False),
             sg.Input(key='-FILE3-', visible=False, enable_events=True), sg.B(button_text="File3 Browse", key="File3 Browse", visible=False),
             sg.Input(key='-FILE4-', visible=False, enable_events=True), sg.B(button_text="EXE Browse", key="EXE Browse", visible=False),
-            sg.Button(button_text="Run / Refresh", key="-REFRESH-"),
-            sg.Button(button_text="PE Mode", key="PE/FM")],
-            [sg.TabGroup([[sg.Tab('Experimental Plot', plot1_layout), sg.Tab('Simulation Plot', plot2_layout),
-                                                         sg.Tab('Dual Plot', plot3_layout),
-                                                         sg.Tab('Variable Editor', plot4_layout, visible=False),
-                                                         sg.Tab('Experimental Data', plot5_layout)]])],
+            sg.Button(button_text="Run", key="-REFRESH-"),
+            sg.Button(button_text="PE Mode", key="PE/FM"),
+            sg.Button(button_text="Mode Select", key="mode-select")],
+            [sg.TabGroup([[sg.Tab('Experimental Data', plot5_layout),
+                        sg.Tab('Experimental Plot', plot1_layout), 
+                        sg.Tab('Simulation Plot', plot2_layout, visible=False),
+                        sg.Tab('Dual Plot', plot3_layout),
+                        sg.Tab('Variable Editor', plot4_layout, visible=False),
+                        ]])],
             [sg.Text('Logs', font=("Helvetica 15 bold"), justification='center', size=(50, 1))],
             [sg.Output(size=(114, 10), key="-output-")]
 
@@ -473,12 +465,16 @@ class GUIBase(object):
         self._timestamp_value = [[idx+1, val] for idx, val in enumerate(to_write)]
         to_write = self._import_concentration_data(self.first_input_path, self.second_input_path, self.third_input_path)
         self._base_value = [[idx+1, val] for idx, val in enumerate(to_write)]
-        self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
-        self.window["-TIMESTAMP-TABLE-"].update(values=self._timestamp_value)
+        self.window["-BASE-VALUE-TABLE-"].update(values=self.convert_values())
 
     @property
     def is_processing(self):
         return self._is_any_thread_running() or self.processing
+
+    @GUI_exception
+    def convert_values(self):
+        table_data = [[x[0], y[1], x[1]] for x, y in zip(self._base_value, self._timestamp_value)]
+        return table_data
 
     def freeze_buttons(self):
         self.window["File1 Browse"].update(disabled=True)
@@ -582,14 +578,14 @@ class GUIBase(object):
                 self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
                 self._write_updated_values(self.first_input_path, self.second_input_path, self.third_input_path, self._VariableDict)
 
-        if table_key == "-TIMESTAMP-TABLE-":
-            new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
-            if new_val:
-                row_value = int(row_value)
-                self._timestamp_value[row_value][1] = float(new_val)
-                self.window[table_key].update(values=self._timestamp_value)
-                to_save = [1, 16.87] + list(map(lambda x: x[1], self._timestamp_value))
-                self._export_timestamps_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
+        # if table_key == "-TIMESTAMP-TABLE-":
+        #     new_val = sg.popup_get_text("Enter value for entry {} from Timestamps".format(row_value+1), default_text=str(self._timestamp_value[row_value][1]))
+        #     if new_val:
+        #         row_value = int(row_value)
+        #         self._timestamp_value[row_value][1] = float(new_val)
+        #         self.window[table_key].update(values=self._timestamp_value)
+        #         to_save = [1, 16.87] + list(map(lambda x: x[1], self._timestamp_value))
+        #         self._export_timestamps_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
 
     def _new_window_for_copy_paste(self):
         layout = [[sg.Text('< Data Importer >', font=('Consolas', 10), size=(90, 1), key='_INFO_', justification="left")],
@@ -618,7 +614,7 @@ class GUIBase(object):
 
             self._base_value = [[idx+1, val] for idx, val in enumerate(value)]
             to_save = ['2.64E-01', '3.60E-01', '4.70E-05', '5.20E-01', '9.76E-03', len(self._base_value)] + list(map(lambda x: x[1], self._base_value))
-            self.window["-BASE-VALUE-TABLE-"].update(values=self._base_value)
+            self.window["-BASE-VALUE-TABLE-"].update(values=self.convert_values())
             self._VariableDict["No. of observation time steps"] = str(len(self._base_value))
             self._export_concentration_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
             self._write_updated_values(self.first_input_path, self.second_input_path, self.third_input_path, self._VariableDict)
@@ -629,7 +625,7 @@ class GUIBase(object):
             value = list(filter(lambda x: len(x) > 0, value))
 
             self._timestamp_value = [[idx+1, val] for idx, val in enumerate(value)]
-            self.window["-TIMESTAMP-TABLE-"].update(values=self._timestamp_value)
+            self.window["-BASE-VALUE-TABLE-"].update(values=self.convert_values())
             to_save = [1, 16.87] + list(map(lambda x: x[1], self._timestamp_value))
             self._export_timestamps_data(to_save, self.first_input_path, self.second_input_path, self.third_input_path)
 
