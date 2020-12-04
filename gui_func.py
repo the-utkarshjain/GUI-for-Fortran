@@ -141,10 +141,10 @@ class GUIMain(GUIBase):
         plt.ylabel('Concentration')
         plt.title('Concentration-Time graph [ {} ]'.format(self.mode))
 
-    @classmethod
+
     @PlotEncapsulator
     @GUI_exception
-    def _plot_both_2D_data(cls, output_file_path: str, time_file_path: str):
+    def _plot_both_2D_data(self, output_file_path: str, time_file_path: str):
         r'''
         Function to plot simulation and experimental data
         on same canvas.
@@ -171,7 +171,7 @@ class GUIMain(GUIBase):
         plt.plot(time,conc2, label='2')
         plt.xlabel('Time')
         plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph [ {} ]'.format(self.mode)')
+        plt.title('Concentration-Time graph [ {} ]'.format(self.mode))
         plt.legend()
     
     @classmethod
