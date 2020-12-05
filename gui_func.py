@@ -110,7 +110,7 @@ class GUIMain(GUIBase):
         plt.scatter(time,conc, marker='o', color='black')
         plt.xlabel('Time')
         plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph [ {} ]'.format(self.mode))
+        plt.title('Observed-BTC [ {} ]'.format(self.mode))
 
 
     @PlotEncapsulator
@@ -167,11 +167,11 @@ class GUIMain(GUIBase):
                 conc1.append(x)
                 conc2.append(y)
 
-        plt.scatter(time,conc1, marker='o',label='1',color='black')
-        plt.plot(time,conc2, label='2')
+        plt.scatter(time,conc1, marker='o',label='Observed',color='black')
+        plt.plot(time,conc2, label='Simulated [ {} ]'.format(self.mode))
         plt.xlabel('Time')
         plt.ylabel('Concentration')
-        plt.title('Concentration-Time graph [ {} ]'.format(self.mode))
+        plt.title('Simulated-BTC [ {} ]'.format(self.mode))
         plt.legend()
     
     @classmethod
